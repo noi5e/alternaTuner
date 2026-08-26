@@ -23,14 +23,16 @@ function getSideBarScales(
 
 export function ScalesLayout() {
   const { claims, loading } = useAuthClaims();
-  const isSideBarVisible = !loading && Boolean(claims);
+  const userId = claims?.sub ?? null;
+
+  const isSideBarVisible = !loading && userId !== null; // depend on userId for state rather than claims. userId is stable, whereas Supabase's claims changes on browser refocus, causing unnecessary re-renders of the sidebar.
 
   const [userScales, setUserScales] = useState<DatabaseScaleRowWithNotes[]>([]);
   const [scalesLoading, setScalesLoading] = useState(true);
   const [scalesError, setScalesError] = useState<string | null>(null);
 
   const refreshScales = useCallback(async () => {
-    if (loading || !claims) {
+    if (!userId) {
       setUserScales([]);
       setScalesLoading(false);
       return;
@@ -50,7 +52,7 @@ export function ScalesLayout() {
     } finally {
       setScalesLoading(false);
     }
-  }, [claims, loading]);
+  }, [userId]);
 
   // fetch user's scales from database, and list them in ScaleSideBar.
   useEffect(() => {
