@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { NavLink } from "react-router";
 
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
 import {
+  CaretDownIcon,
   PlusIcon,
   WarningCircleIcon,
   MusicNoteSimpleIcon,
@@ -11,27 +13,49 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import type { ScaleSideBarProps, ScaleListErrorProps } from "./scale.types";
-import { cn } from "#lib/utils";
+import { cn } from "@/lib/utils";
 
 export function ScaleSideBar({
   userScales,
   isLoading,
   error,
 }: ScaleSideBarProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <aside
-      className="sticky top-[--nav-height]
-    hidden h-[calc(100dvh-var(--nav-height))] flex-col
-    border-r border-sidebar-border
-    bg-sidebar text-sidebar-foreground
-    p-4 lg:flex"
+      className="sticky top-(--nav-height) z-10
+  flex w-full flex-col border-b border-sidebar-border
+  bg-sidebar max-h-[50dvh] p-4 text-sidebar-foreground
+  lg:h-[calc(100dvh-var(--nav-height))]
+  lg:border-r lg:border-b-0 lg:max-h-none"
     >
-      <header className="mb-4">
-        <h2 className="text-base font-medium tracking-tight">My Scales</h2>
+      <header className="lg:mb-4 shrink-0">
+        <button
+          type="button"
+          className="flex min-h-11 w-full items-center justify-between px-4 lg:hidden focus-visible:outline-none
+          focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+          onClick={() => setIsOpen((open) => !open)}
+          aria-expanded={isOpen}
+          aria-controls="scale-navigation"
+        >
+          <span className="text-lg font-medium">My Scales</span>
+          <CaretDownIcon
+            className={cn("transition-transform", isOpen && "rotate-180")}
+          />
+        </button>
+
+        <h2 className="hidden text-base font-medium tracking-tight lg:block">
+          My Scales
+        </h2>
       </header>
       <nav
-        className="min-h-0 flex-1 overflow-y-auto"
-        aria-label="Scale Navigation"
+        id="scale-navigation"
+        aria-label="Scale navigation"
+        className={cn(
+          "min-h-0 w-full overflow-y-auto lg:block lg:max-h-none lg:flex-1",
+          isOpen ? "block" : "hidden",
+        )}
       >
         {isLoading ? (
           <ScaleListSkeleton />
@@ -40,7 +64,7 @@ export function ScaleSideBar({
         ) : userScales.length === 0 ? (
           <ScaleListEmpty />
         ) : (
-          <ul className="space-y-1">
+          <ul className="w-full min-w-0 space-y-1">
             {userScales.map((scale) => {
               return (
                 <ScaleSideBarLink
@@ -48,6 +72,7 @@ export function ScaleSideBar({
                   id={scale.id}
                   title={scale.title}
                   noteCount={scale.noteCount}
+                  onNavigate={() => setIsOpen(false)}
                 />
               );
             })}
@@ -55,9 +80,15 @@ export function ScaleSideBar({
         )}
       </nav>
 
-      <footer className="mt-4 flex justify-center ">
+      <footer
+        className={cn(
+          "mt-4 justify-center shrink-0",
+          isOpen ? "flex" : "hidden",
+          "lg:flex",
+        )}
+      >
         <Button asChild variant="outline" className="w-3/4 flex justify-center">
-          <NavLink to="/scales/new">
+          <NavLink to="/scales/new" onClick={() => setIsOpen(false)}>
             <PlusIcon className="size-4" />
             <span>New Scale</span>
           </NavLink>
@@ -71,10 +102,12 @@ function ScaleSideBarLink({
   noteCount,
   title,
   id,
+  onNavigate,
 }: {
   noteCount: number;
   title: string;
   id: string;
+  onNavigate: () => void;
 }) {
   return (
     <li key={id}>
@@ -89,6 +122,7 @@ function ScaleSideBarLink({
               "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
           )
         }
+        onClick={onNavigate}
       >
         <Badge variant="secondary" className="shrink-0">
           <MusicNoteSimpleIcon data-icon="inline-start" weight="fill" />

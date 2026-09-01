@@ -18,7 +18,7 @@ export function SiteNav() {
   }
 
   return (
-    <NavigationMenu className="bg-gray-400 text-white p-4 w-full [&>div]:w-full h-(--nav-height) sticky top-0">
+    <NavigationMenu className="bg-gray-400 text-white p-4 w-full [&>div]:w-full h-(--nav-height) sticky top-0 z-20">
       {/* Shadcn inserts a div wrapper for NavigationMenuList, so target the div wrapper with [&>div]:w-full */}
       <NavigationMenuList className="w-full">
         <NavigationMenuItem>
