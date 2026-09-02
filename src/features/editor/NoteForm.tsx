@@ -8,14 +8,14 @@ import { PlusIcon } from "@phosphor-icons/react";
 export function NoteForm({ onCreateNote }: NoteFormProps) {
   return (
     <form
-      className="w-full border-y border-gray-200 p-4 bg-muted/20"
+      className="w-full border-y border-gray-200 bg-muted/20 p-4"
       action={onCreateNote}
     >
       <FieldGroup>
         <Field className="mx-auto w-full max-w-xl gap-2">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <FieldLabel
-              className="text-xs font-medium uppercase tracking-wide text-muted-foreground min-w-fit"
+              className="min-w-fit text-xs font-medium tracking-wide text-muted-foreground uppercase"
               htmlFor="hertz"
             >
               Add note
@@ -23,7 +23,7 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
             <div className="flex w-full items-center gap-2">
               <Input
                 id="hertz"
-                className="rounded-none text-lg flex-1 font-semibold tabular-nums"
+                className="flex-1 rounded-none text-lg font-semibold tabular-nums"
                 name="hertz"
                 type="number"
                 placeholder="Enter frequency in Hz..."
@@ -31,7 +31,7 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
               />
               <Button
                 aria-label="Add note"
-                className="rounded-none cursor-pointer shrink-0"
+                className="shrink-0 cursor-pointer rounded-none"
                 size="icon"
                 type="submit"
               >

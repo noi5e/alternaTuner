@@ -23,18 +23,11 @@ export function ScaleSideBar({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <aside
-      className="sticky top-(--nav-height) z-10
-  flex w-full flex-col border-b border-sidebar-border
-  bg-sidebar max-h-[50dvh] p-4 text-sidebar-foreground
-  lg:h-[calc(100dvh-var(--nav-height))]
-  lg:border-r lg:border-b-0 lg:max-h-none"
-    >
-      <header className="lg:mb-4 shrink-0">
+    <aside className="sticky top-(--nav-height) z-10 flex max-h-[50dvh] w-full flex-col border-b border-sidebar-border bg-sidebar p-4 text-sidebar-foreground lg:h-[calc(100dvh-var(--nav-height))] lg:max-h-none lg:border-r lg:border-b-0">
+      <header className="shrink-0 lg:mb-4">
         <button
           type="button"
-          className="flex min-h-11 w-full items-center justify-between px-4 lg:hidden focus-visible:outline-none
-          focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+          className="flex min-h-11 w-full items-center justify-between px-4 focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none lg:hidden"
           onClick={() => setIsOpen((open) => !open)}
           aria-expanded={isOpen}
           aria-controls="scale-navigation"
@@ -82,12 +75,12 @@ export function ScaleSideBar({
 
       <footer
         className={cn(
-          "mt-4 justify-center shrink-0",
+          "mt-4 shrink-0 justify-center",
           isOpen ? "flex" : "hidden",
           "lg:flex",
         )}
       >
-        <Button asChild variant="outline" className="w-3/4 flex justify-center">
+        <Button asChild variant="outline" className="flex w-3/4 justify-center">
           <NavLink to="/scales/new" onClick={() => setIsOpen(false)}>
             <PlusIcon className="size-4" />
             <span>New Scale</span>
@@ -117,7 +110,7 @@ function ScaleSideBarLink({
           cn(
             "flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground",
             "transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+            "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none",
             isActive &&
               "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
           )

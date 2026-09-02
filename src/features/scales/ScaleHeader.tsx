@@ -21,13 +21,13 @@ export function ScaleHeader({
   const displayedTitle = scaleTitle || "Untitled Scale";
 
   return (
-    <div className="w-full flex flex-col items-end sm:flex-row sm:items-center p-4 gap-4">
-      <div className="flex justify-center sm:justify-start sm:basis-1/2 w-full items-baseline gap-4">
+    <div className="flex w-full flex-col items-end gap-4 p-4 sm:flex-row sm:items-center">
+      <div className="flex w-full items-baseline justify-center gap-4 sm:basis-1/2 sm:justify-start">
         <span className="relative inline-block min-w-0">
           {/* Invisible element that determines width, height, and baseline of the scale title (both button and input) */}
           <span
             aria-hidden="true"
-            className="invisible block whitespace-pre px-2 text-3xl font-thin italic"
+            className="invisible block px-2 text-3xl font-thin whitespace-pre italic"
           >
             {displayedTitle}
           </span>
@@ -57,18 +57,7 @@ export function ScaleHeader({
                   setScaleTitle(titleInputValue);
                 }
               }}
-              className="
-        absolute inset-0
-        h-full w-full min-w-0
-        rounded-none border-0 border-b border-gray-400
-        bg-gray-50/70 px-1 py-0
-        text-3xl font-thin italic text-gray-500
-        shadow-none
-        md:text-3xl
-        focus-visible:border-gray-500
-        focus-visible:ring-2
-        focus-visible:ring-gray-400/25
-      "
+              className="absolute inset-0 h-full w-full min-w-0 rounded-none border-0 border-b border-gray-400 bg-gray-50/70 px-1 py-0 text-3xl font-thin text-gray-500 italic shadow-none focus-visible:border-gray-500 focus-visible:ring-2 focus-visible:ring-gray-400/25 md:text-3xl"
             />
           ) : (
             <button
@@ -76,19 +65,7 @@ export function ScaleHeader({
               onClick={() => {
                 setIsEditingTitle(true);
               }}
-              className="
-        absolute inset-0
-        h-full w-full
-        appearance-none whitespace-nowrap
-        border-0 bg-transparent px-1 py-0
-        text-left text-3xl font-thin italic text-gray-500
-        cursor-text
-        hover:bg-transparent hover:text-gray-500
-        focus-visible:rounded-sm
-        focus-visible:outline-2
-        focus-visible:outline-offset-2
-        focus-visible:outline-gray-400
-      "
+              className="absolute inset-0 h-full w-full cursor-text appearance-none border-0 bg-transparent px-1 py-0 text-left text-3xl font-thin whitespace-nowrap text-gray-500 italic hover:bg-transparent hover:text-gray-500 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
             >
               {displayedTitle}
             </button>
@@ -99,19 +76,19 @@ export function ScaleHeader({
           {scaleTitle ?? "Untitled Scale"}
         </div> */}
 
-        <div className=" text-gray-400 whitespace-nowrap italic items-end sm:items-center font-thin text-xl cursor-default">
+        <div className="cursor-default items-end text-xl font-thin whitespace-nowrap text-gray-400 italic sm:items-center">
           ( {notesCount > 0 ? notesCount : 0}{" "}
           {notesCount === 1 ? "Note" : "Notes"} )
         </div>
       </div>
 
-      <div className="flex basis-1/2 m-auto sm:justify-end">
-        <Button className="max-w-fit mr-2 cursor-pointer">
+      <div className="m-auto flex basis-1/2 sm:justify-end">
+        <Button className="mr-2 max-w-fit cursor-pointer">
           <HeartIcon />
           Favorite
         </Button>
         <Button
-          className="max-w-fit mr-2 cursor-pointer"
+          className="mr-2 max-w-fit cursor-pointer"
           disabled={isSaving}
           onClick={onSave}
         >

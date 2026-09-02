@@ -18,13 +18,13 @@ export function SiteNav() {
   }
 
   return (
-    <NavigationMenu className="bg-gray-400 text-white p-4 w-full [&>div]:w-full h-(--nav-height) sticky top-0 z-20">
+    <NavigationMenu className="sticky top-0 z-20 h-(--nav-height) w-full bg-gray-400 p-4 text-white [&>div]:w-full">
       {/* Shadcn inserts a div wrapper for NavigationMenuList, so target the div wrapper with [&>div]:w-full */}
       <NavigationMenuList className="w-full">
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link
-              className="text-shadow-lg text-3xl italic font-bold tracking-wide"
+              className="text-3xl font-bold tracking-wide italic text-shadow-lg"
               to="/"
             >
               alternaTuner

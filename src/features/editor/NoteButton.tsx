@@ -22,9 +22,7 @@ export function NoteButton({
   return (
     <Card
       data-playing={isPlaying}
-      className="relative h-32 w-28 cursor-pointer rounded-none transition-colors duration-100
-    data-[playing=true]:bg-primary
-    data-[playing=true]:text-primary-foreground"
+      className="relative h-32 w-28 cursor-pointer rounded-none transition-colors duration-100 data-[playing=true]:bg-primary data-[playing=true]:text-primary-foreground"
       onPointerDown={(event) => {
         if (event.button !== 0) return; // only respond to left mouse button or primary touch
         event.currentTarget.setPointerCapture(event.pointerId); // ensures that the pointerup event is fired even if the user moves their pointer outside of the button, while holding down
@@ -43,15 +41,15 @@ export function NoteButton({
         stopNote(`pointer:${event.pointerId}`); // handles edge cases where note needs to stop
       }}
     >
-      <CardHeader className="absolute inset-0 p-2 z-10 rounded-none">
-        <div className="flex justify-around items-center">
+      <CardHeader className="absolute inset-0 z-10 rounded-none p-2">
+        <div className="flex items-center justify-around">
           {label && (
-            <Badge className="text-gray-400 cursor-default bg-transparent">
+            <Badge className="cursor-default bg-transparent text-gray-400">
               {label}
             </Badge>
           )}
           <Button
-            className="opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100 text-gray-400 cursor-pointer"
+            className="cursor-pointer text-gray-400 opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100"
             aria-label={`Delete ${hertz} Hz note`}
             variant="ghost"
             size="icon"
@@ -67,7 +65,7 @@ export function NoteButton({
         </div>
       </CardHeader>
       <CardContent className="absolute inset-0 flex items-center justify-center gap-1 p-0">
-        <span className="font-extrabold text-2xl">{hertz}</span>
+        <span className="text-2xl font-extrabold">{hertz}</span>
         <span className="text-xs text-gray-400">Hz</span>
       </CardContent>
     </Card>

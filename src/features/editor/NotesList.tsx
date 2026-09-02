@@ -9,7 +9,7 @@ export function NotesList({
   stopNote,
 }: NotesListProps) {
   return (
-    <div className="flex flex-wrap gap-2 my-8">
+    <div className="my-8 flex flex-wrap gap-2">
       {notes.map((note) => (
         <NoteButton
           key={note.hertz}
