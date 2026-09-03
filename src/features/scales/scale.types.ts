@@ -1,4 +1,5 @@
 import type { deleteScaleFunction } from "@/features/editor/editor.types";
+import type { Tables } from "@/lib/database.types"; // auto-generated Supabase types
 
 export type ScaleHeaderProps = {
   notesCount: number;
@@ -42,22 +43,16 @@ export type ScalesOutletContext = {
 };
 
 // single row from scale_notes table, with foreign key scale_id to scales table
-export type DatabaseScaleNoteRow = {
-  id: string;
-  scale_id: string;
-  position: number;
-  hertz: number;
-};
+export type DatabaseScaleNoteRow = Tables<"scale_notes">;
 
 // single row from scales table, without its associated scale_notes
-export type DatabaseScaleRow = {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-};
+export type DatabaseScaleRow = Tables<"scales">;
 
 // single row from scales table WITH its associated scale_notes
-export type DatabaseScaleRowWithNotes = DatabaseScaleRow & {
+export type DatabaseScaleRowWithNotes = Pick<
+  DatabaseScaleRow,
+  "id" | "title" | "created_at" | "updated_at"
+> & {
+  // drop owner_id from the type, since API doesn't query it.
   scale_notes: DatabaseScaleNoteRow[];
 };
