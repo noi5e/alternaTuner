@@ -9,7 +9,7 @@ export function NotesList({
   stopNote,
 }: NotesListProps) {
   return (
-    <div className="my-8 flex flex-wrap gap-2">
+    <div className="my-8 flex flex-wrap justify-center gap-2 lg:justify-start">
       {notes.map((note) => (
         <NoteButton
           key={note.hertz}
