@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import { useAuthClaims } from "@/features/auth/useAuthClaims";
+import { useAuth } from "@/features/auth/AuthContext";
 
 function getAuthErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "code" in error) {
@@ -49,7 +49,7 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const { claims, loading } = useAuthClaims();
+  const { claims, loading } = useAuth();
 
   // Check URL params on initial render
   const [verifyingMagicLink, setVerifyingMagicLink] = useState(() => {

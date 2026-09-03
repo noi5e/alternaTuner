@@ -27,7 +27,3 @@ export function useAuthClaims() {
 
   return { claims, loading };
 }
-
-export async function signOut() {
-  await supabase.auth.signOut();
-}

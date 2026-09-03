@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
-import { useAuthClaims } from "@/features/auth/useAuthClaims";
+import { useAuth } from "@/features/auth/AuthContext";
 import { listScales } from "@/features/scales/api";
 
 import type {
@@ -22,7 +22,7 @@ function getSideBarScales(
 }
 
 export function ScalesLayout() {
-  const { claims, loading } = useAuthClaims();
+  const { claims, loading } = useAuth();
   const userId = claims?.sub ?? null;
 
   const isSideBarVisible = !loading && userId !== null; // depend on userId for state rather than claims. userId is stable, whereas Supabase's claims changes on browser refocus, causing unnecessary re-renders of the sidebar.

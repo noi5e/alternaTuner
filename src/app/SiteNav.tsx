@@ -6,10 +6,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Link, useNavigate } from "react-router";
 
-import { useAuthClaims, signOut } from "@/features/auth/useAuthClaims";
+import { useAuth } from "@/features/auth/AuthContext";
 
 export function SiteNav() {
-  const { claims, loading } = useAuthClaims();
+  const { claims, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
   async function handleLogout() {
