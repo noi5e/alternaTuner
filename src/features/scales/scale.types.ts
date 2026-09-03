@@ -1,4 +1,4 @@
-import type { deleteScaleFunction } from "@/features/editor/editor.types";
+import type { DeleteScaleHandler } from "@/features/editor/editor.types";
 import type { Tables } from "@/lib/database.types"; // auto-generated Supabase types
 
 export type ScaleHeaderProps = {
@@ -6,7 +6,7 @@ export type ScaleHeaderProps = {
   setScaleTitle: (newTitle: string) => void;
   scaleTitle: string;
   onSave: () => void;
-  onDelete?: deleteScaleFunction;
+  onDelete?: DeleteScaleHandler;
   isSaving: boolean;
 };
 
@@ -18,16 +18,6 @@ export type ScaleSideBarProps = {
 
 export type ScaleListErrorProps = {
   message: string;
-};
-
-export type EditorScaleNote = {
-  hertz: number;
-};
-
-// a scale that is editable/visible in UI, also used to create audio objects for playback.
-export type EditorScale = {
-  title: string;
-  notes: EditorScaleNote[];
 };
 
 // link to user's individual scale in sidebar

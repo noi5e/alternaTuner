@@ -1,11 +1,11 @@
 import { supabase } from "@/lib/supabase";
+import type { ScaleDraft } from "@/features/editor/editor.types";
 import type {
-  EditorScale,
   DatabaseScaleRow,
   DatabaseScaleRowWithNotes,
 } from "@/features/scales/scale.types";
 
-function stripEditorScaleNotesArray(notes: EditorScale["notes"]): number[] {
+function stripScaleDraftNotes(notes: ScaleDraft["notes"]): number[] {
   return notes.map(({ hertz }) => hertz);
 }
 
@@ -35,8 +35,8 @@ export async function getScaleById(
 export async function createScale({
   title = "Untitled Scale",
   notes,
-}: EditorScale): Promise<DatabaseScaleRow> {
-  const p_notes = stripEditorScaleNotesArray(notes);
+}: ScaleDraft): Promise<DatabaseScaleRow> {
+  const p_notes = stripScaleDraftNotes(notes);
 
   const { data, error } = await supabase
     .rpc("create_scale_with_notes", {
@@ -51,12 +51,12 @@ export async function createScale({
 
 export async function updateScale(
   id: string,
-  { title, notes }: EditorScale,
+  { title, notes }: ScaleDraft,
 ): Promise<DatabaseScaleRowWithNotes> {
   const { error } = await supabase.rpc("update_scale_with_notes", {
     p_scale_id: id,
     p_title: title,
-    p_notes: stripEditorScaleNotesArray(notes),
+    p_notes: stripScaleDraftNotes(notes),
   });
 
   if (error) throw error;

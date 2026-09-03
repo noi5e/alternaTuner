@@ -1,15 +1,15 @@
 import { Editor } from "@/features/editor/Editor";
+import type { ScaleDraft } from "@/features/editor/editor.types";
 import { createScale } from "@/features/scales/api";
 import { useNavigate } from "react-router";
 import { useScalesContext } from "@/features/scales/useScalesContext";
-import type { EditorScale } from "@/features/scales/scale.types";
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
 export function NewScalePage() {
   const navigate = useNavigate();
   const { refreshScales } = useScalesContext();
 
-  async function handleCreate(draft: EditorScale) {
+  async function handleCreate(draft: ScaleDraft) {
     const created = await createScale({
       title: draft.title,
       notes: draft.notes.map(({ hertz }) => ({ hertz })),
