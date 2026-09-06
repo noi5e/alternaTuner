@@ -29,9 +29,15 @@ export type NoteButtonProps = {
   stopNote: StopNoteHandler;
 };
 
+export type CreateNoteResult =
+  { success: true } | { success: false; message: string };
+
 export type NoteFormProps = {
-  onCreateNote: (formData: FormData) => void;
+  onCreateNote: (hertz: number) => CreateNoteResult;
 };
+
+export type ParseHertzResult =
+  { success: true; value: number } | { success: false; message: string };
 
 export type NotesListProps = {
   notes: Note[];

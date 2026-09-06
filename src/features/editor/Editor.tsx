@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type {
   ScaleEditorProps,
   Note,
+  CreateNoteResult,
   PlayingNote,
 } from "@/features/editor/editor.types";
 
@@ -157,30 +158,19 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
   }, [stopAllNotes]);
 
   // get user input, create NoteButton component in UI
-  function createNote(formData: FormData) {
-    const raw = formData.get("hertz");
-
-    if (typeof raw !== "string") {
-      console.error("Invalid input");
-      return;
-    }
-
-    if (notes.length === PLAYABLE_KEYS.length) {
-      console.error(
-        `A scale can't contain more than ${PLAYABLE_KEYS.length} notes.`,
-      );
-      return; // prevent adding more notes than there are playable keys
-    }
-
-    const hertz = Number(raw);
-
-    if (!Number.isFinite(hertz) || hertz <= 0) {
-      console.error("Frequency must be a finite number greater than 0.");
-      return;
+  function createNote(hertz: number): CreateNoteResult {
+    if (notes.length >= PLAYABLE_KEYS.length) {
+      return {
+        success: false,
+        message: `Cannot add more than ${PLAYABLE_KEYS.length} notes.`,
+      }; // prevent adding more notes than there are playable keys
     }
 
     if (notes.some((note) => note.hertz === hertz)) {
-      return; // allow only unique notes
+      return {
+        success: false,
+        message: `${hertz} Hz is already in this scale.`,
+      }; // allow only unique notes
     }
 
     stopAllNotes();
@@ -188,6 +178,8 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
     setNotes((prev) => {
       return getPlayableNotes([...prev, { hertz }]);
     });
+
+    return { success: true };
   }
 
   function deleteNote(hertzToDelete: number) {
