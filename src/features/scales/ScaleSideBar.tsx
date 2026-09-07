@@ -4,6 +4,7 @@ import { NavLink } from "react-router";
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
 import {
+  ArrowsClockwiseIcon,
   CaretDownIcon,
   PlusIcon,
   WarningCircleIcon,
@@ -17,7 +18,9 @@ import { cn } from "@/lib/utils";
 
 export function ScaleSideBar({
   userScales,
+  hasLoadedScales,
   isLoading,
+  isRefreshing,
   error,
 }: ScaleSideBarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,14 +35,17 @@ export function ScaleSideBar({
           aria-expanded={isOpen}
           aria-controls="scale-navigation"
         >
-          <span className="text-lg font-medium">My Scales</span>
+          <span className="flex items-center gap-2 text-lg font-medium">
+            My Scales <RefreshIndicator isRefreshing={isRefreshing} />
+          </span>
           <CaretDownIcon
             className={cn("transition-transform", isOpen && "rotate-180")}
           />
         </button>
 
-        <h2 className="hidden text-base font-medium tracking-tight lg:block">
+        <h2 className="hidden items-center gap-2 text-base font-medium tracking-tight lg:flex">
           My Scales
+          <RefreshIndicator isRefreshing={isRefreshing} />
         </h2>
       </header>
       <nav
@@ -52,10 +58,21 @@ export function ScaleSideBar({
       >
         {isLoading ? (
           <ScaleListSkeleton />
-        ) : error ? (
+        ) : error && !hasLoadedScales ? (
           <ScaleListError message={error} />
         ) : userScales.length === 0 ? (
           <ScaleListEmpty />
+        ) : error && hasLoadedScales ? (
+          <div
+            role="alert"
+            className="mb-2 flex items-start gap-2 px-2 py-2 text-sm text-muted-foreground"
+          >
+            <WarningCircleIcon
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0"
+            />
+            <p>Couldn’t refresh scales. Showing the last loaded list.</p>
+          </div>
         ) : (
           <ul className="w-full min-w-0 space-y-1">
             {userScales.map((scale) => {
@@ -88,6 +105,22 @@ export function ScaleSideBar({
         </Button>
       </footer>
     </aside>
+  );
+}
+
+function RefreshIndicator({ isRefreshing }: { isRefreshing: boolean }) {
+  return (
+    <span role="status" className="inline-flex size-4 shrink-0">
+      {isRefreshing && (
+        <>
+          <ArrowsClockwiseIcon
+            aria-hidden="true"
+            className="size-4 text-muted-foreground motion-safe:animate-spin"
+          />
+          <span className="sr-only">Refreshing scales</span>
+        </>
+      )}
+    </span>
   );
 }
 

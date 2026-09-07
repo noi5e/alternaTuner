@@ -12,7 +12,9 @@ export type ScaleHeaderProps = {
 
 export type ScaleSideBarProps = {
   userScales: SideBarScale[];
+  hasLoadedScales: boolean;
   isLoading: boolean;
+  isRefreshing: boolean;
   error: string | null;
 };
 

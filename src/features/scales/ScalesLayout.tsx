@@ -28,21 +28,23 @@ export function ScalesLayout() {
   const isSideBarVisible = !loading && userId !== null; // depend on userId for state rather than claims. userId is stable, whereas Supabase's claims changes on browser refocus, causing unnecessary re-renders of the sidebar.
 
   const [userScales, setUserScales] = useState<DatabaseScaleRowWithNotes[]>([]);
-  const [scalesLoading, setScalesLoading] = useState(true);
+  const [hasLoadedScales, setHasLoadedScales] = useState(false); // initial load of scales, on component mount.
+  const [scalesRefreshing, setScalesRefreshing] = useState(false); // tracks refresh status, which runs on initial load and thereafter with every user action on scales.
   const [scalesError, setScalesError] = useState<string | null>(null);
 
   const refreshScales = useCallback(async () => {
     if (!userId) {
       setUserScales([]);
-      setScalesLoading(false);
+      setHasLoadedScales(false);
       return;
     }
 
     try {
-      setScalesLoading(true);
+      setScalesRefreshing(true);
       setScalesError(null);
       const scales = await listScales();
       setUserScales(scales);
+      setHasLoadedScales(true);
     } catch (error) {
       console.error("Error refreshing scales:", error);
 
@@ -50,13 +52,13 @@ export function ScalesLayout() {
         error instanceof Error ? error.message : "Failed to refresh scales",
       );
     } finally {
-      setScalesLoading(false);
+      setScalesRefreshing(false);
     }
   }, [userId]);
 
   // fetch user's scales from database, and list them in ScaleSideBar.
   useEffect(() => {
-    if (loading) return;
+    if (loading) return; // auth "loading", don't fetch scales yet.
     void refreshScales(); // fire-and-forget async function, because React doesn't allow useEffect to return a Promise. however, we still want to fetch data from server, which is inherently async.
   }, [loading, refreshScales]);
 
@@ -65,7 +67,9 @@ export function ScalesLayout() {
       {isSideBarVisible && (
         <ScaleSideBar
           userScales={getSideBarScales(userScales)}
-          isLoading={scalesLoading}
+          hasLoadedScales={hasLoadedScales}
+          isLoading={!hasLoadedScales && scalesRefreshing}
+          isRefreshing={hasLoadedScales && scalesRefreshing}
           error={scalesError}
         />
       )}
