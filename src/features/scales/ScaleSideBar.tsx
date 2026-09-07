@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { NavLink } from "react-router";
 
-import { routeSlugTranslator } from "@/lib/routeSlug";
+import ScaleSideBarLink from "./ScaleSideBarLink";
+import ScaleListError from "./ScaleListError";
+import ScaleListSkeleton from "./ScaleListSkeleton";
+import ScaleListEmpty from "./ScaleListEmpty";
 
 import {
   ArrowsClockwiseIcon,
   CaretDownIcon,
   PlusIcon,
   WarningCircleIcon,
-  MusicNoteSimpleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-import type { ScaleSideBarProps, ScaleListErrorProps } from "./scale.types";
+import type { ScaleSideBarProps } from "./scale.types";
 import { cn } from "@/lib/utils";
 
 export function ScaleSideBar({
@@ -121,82 +122,5 @@ function RefreshIndicator({ isRefreshing }: { isRefreshing: boolean }) {
         </>
       )}
     </span>
-  );
-}
-
-function ScaleSideBarLink({
-  noteCount,
-  title,
-  id,
-  onNavigate,
-}: {
-  noteCount: number;
-  title: string;
-  id: string;
-  onNavigate: () => void;
-}) {
-  return (
-    <li key={id}>
-      <NavLink
-        to={`/scales/${routeSlugTranslator.fromUUID(id)}`}
-        className={({ isActive }) =>
-          cn(
-            "flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground",
-            "transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none",
-            isActive &&
-              "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
-          )
-        }
-        onClick={onNavigate}
-      >
-        <Badge variant="secondary" className="shrink-0">
-          <MusicNoteSimpleIcon data-icon="inline-start" weight="fill" />
-          <span className="text-xs">{noteCount}</span>
-        </Badge>
-
-        <span className="min-w-0 flex-1 truncate">{title}</span>
-      </NavLink>
-    </li>
-  );
-}
-
-function ScaleListSkeleton() {
-  return (
-    <div className="space-y-1" aria-label="Loading scales" aria-busy="true">
-      {Array.from({ length: 3 }, (_, index) => (
-        <div
-          key={index}
-          className="flex h-9 items-center gap-2 rounded-md px-2"
-        >
-          <div className="h-6 w-12 shrink-0 animate-pulse rounded-full bg-sidebar-accent" />
-          <div
-            className={[
-              "h-4 animate-pulse rounded bg-sidebar-accent",
-              index === 0 ? "w-2/3" : index === 1 ? "w-1/2" : "w-3/4",
-            ].join(" ")}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ScaleListEmpty() {
-  return (
-    <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-      No saved scales yet.
-    </p>
-  );
-}
-
-function ScaleListError({ message }: ScaleListErrorProps) {
-  return (
-    <div role="alert" className="space-y-3 px-3 py-4">
-      <div className="flex gap-2 text-sm text-destructive">
-        <WarningCircleIcon className="mt-0.5 size-4 shrink-0" />
-        <p>{message}</p>
-      </div>
-    </div>
   );
 }
