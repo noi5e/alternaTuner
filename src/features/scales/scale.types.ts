@@ -18,6 +18,13 @@ export type ScaleSideBarProps = {
   error: string | null;
 };
 
+export type ScaleSideBarLinkProps = {
+  noteCount: number;
+  title: string;
+  id: string;
+  onNavigate: () => void;
+};
+
 export type ScaleListErrorProps = {
   message: string;
 };
