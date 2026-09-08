@@ -63,7 +63,7 @@ export function ScalesLayout() {
   }, [loading, refreshScales]);
 
   return (
-    <div className="grid min-h-[calc(100dvh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="grid min-h-[calc(100dvh-var(--nav-height))] grid-cols-1 grid-rows-[auto_1fr] lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-1">
       {isSideBarVisible && (
         <ScaleSideBar
           userScales={getSideBarScales(userScales)}
