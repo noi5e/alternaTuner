@@ -1,11 +1,32 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { FileIcon, HeartIcon, TrashIcon } from "@phosphor-icons/react";
+import {
+  FloppyDiskIcon,
+  HeartIcon,
+  TrashIcon,
+  PencilSimpleIcon,
+  MusicNoteSimpleIcon,
+} from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 import type { ScaleHeaderProps } from "@/features/scales/scale.types";
+
+// Keep the measuring span and visible button geometrically identical.
+const titleLayoutClasses =
+  "inline-flex min-w-0 items-center gap-2 px-2 py-1 text-3xl font-light italic";
+const titleTextClasses = "min-w-0 truncate pr-1";
+
+function EditTitlePencilIcon() {
+  return (
+    <PencilSimpleIcon
+      className="size-5 shrink-0 cursor-pointer text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+      aria-hidden="true"
+    />
+  );
+}
 
 export function ScaleHeader({
   scaleTitle,
@@ -17,94 +38,120 @@ export function ScaleHeader({
 }: ScaleHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState("");
+  const titleButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreTitleFocusRef = useRef(false);
+
+  useEffect(() => {
+    if (!isEditingTitle && restoreTitleFocusRef.current) {
+      restoreTitleFocusRef.current = false;
+      titleButtonRef.current?.focus();
+    }
+  }, [isEditingTitle]);
 
   const displayedTitle = scaleTitle || "Untitled Scale";
 
   return (
-    <div className="flex w-full flex-col items-end gap-4 p-4 sm:flex-row sm:items-center">
-      <div className="flex w-full items-baseline justify-center gap-4 sm:basis-1/2 sm:justify-start">
-        <span className="relative inline-block min-w-0">
+    <div className="flex w-full flex-col items-start gap-4 p-4 md:flex-row md:items-center">
+      <div className="flex w-full max-w-md min-w-0 flex-col items-start justify-center gap-1 md:flex-1 md:justify-start">
+        <span
+          className={cn(
+            "relative inline-block max-w-full min-w-0",
+            isEditingTitle && "w-full",
+          )}
+        >
           {/* Invisible element that determines width, height, and baseline of the scale title (both button and input) */}
           <span
             aria-hidden="true"
-            className="invisible block px-2 text-3xl font-thin whitespace-pre italic"
+            className={cn(
+              titleLayoutClasses,
+              "invisible max-w-full overflow-hidden",
+            )}
           >
-            {displayedTitle}
+            <span className={titleTextClasses}>{displayedTitle}</span>
+            <EditTitlePencilIcon />
           </span>
 
           {isEditingTitle ? (
             <Input
               autoFocus
-              aria-label="Scale title"
+              aria-label="Scale Title"
               placeholder={scaleTitle ?? "Untitled Scale"}
               onChange={(event) => setTitleInputValue(event.target.value)}
               onBlur={() => {
                 setIsEditingTitle(false);
-                if (titleInputValue.length > 0) {
-                  setScaleTitle(titleInputValue);
+                if (
+                  titleInputValue.length > 0 &&
+                  titleInputValue.trim() !== scaleTitle
+                ) {
+                  setScaleTitle(titleInputValue.trim());
                 }
               }}
               onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.currentTarget.blur();
-                }
+                if (event.nativeEvent.isComposing) return;
 
-                if (event.key === "Escape" && titleInputValue === "") {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  restoreTitleFocusRef.current = true;
+                  event.currentTarget.blur();
+                } else if (event.key === "Escape") {
+                  event.preventDefault();
+                  restoreTitleFocusRef.current = true;
                   setIsEditingTitle(false);
                 }
-
-                if (event.key === "Escape") {
-                  setScaleTitle(titleInputValue);
-                }
               }}
-              className="absolute inset-0 h-full w-full min-w-0 rounded-none border-0 border-b border-gray-400 bg-gray-50/70 px-1 py-0 text-3xl font-thin text-gray-500 italic shadow-none focus-visible:border-gray-500 focus-visible:ring-2 focus-visible:ring-gray-400/25 md:text-3xl"
+              className="absolute inset-0 h-full w-full min-w-0 rounded-none border-0 border-b border-border bg-muted px-2 py-0 text-3xl font-light text-foreground italic shadow-none focus-visible:border-ring focus-visible:ring-ring/25 md:text-3xl"
+              value={titleInputValue}
             />
           ) : (
             <button
+              ref={titleButtonRef}
               type="button"
+              aria-label={`Edit scale title: ${displayedTitle}`}
               onClick={() => {
+                setTitleInputValue(scaleTitle ?? "Untitled Scale");
                 setIsEditingTitle(true);
               }}
-              className="absolute inset-0 h-full w-full cursor-text appearance-none border-0 bg-transparent px-1 py-0 text-left text-3xl font-thin whitespace-nowrap text-gray-500 italic hover:bg-transparent hover:text-gray-500 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
+              className={cn(
+                titleLayoutClasses,
+                "group absolute inset-0 h-full w-full cursor-text rounded-sm border-0 bg-transparent text-left text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              )}
             >
-              {displayedTitle}
+              <span className={titleTextClasses}>{displayedTitle}</span>
+              <EditTitlePencilIcon />
             </button>
           )}
         </span>
-
-        {/* <div className="basis-auto whitespace-nowrap text-3xl font-thin italic text-gray-500 cursor-text">
-          {scaleTitle ?? "Untitled Scale"}
-        </div> */}
-
-        <div className="cursor-default items-end text-xl font-thin whitespace-nowrap text-gray-400 italic sm:items-center">
-          ( {notesCount > 0 ? notesCount : 0}{" "}
-          {notesCount === 1 ? "Note" : "Notes"} )
-        </div>
+        <span className="inline-flex items-center gap-1.5 px-2 text-sm font-normal text-muted-foreground not-italic">
+          <MusicNoteSimpleIcon aria-hidden="true" className="size-4 shrink-0" />
+          <span>
+            {notesCount} {notesCount === 1 ? "note" : "notes"}
+          </span>
+        </span>
       </div>
 
-      <div className="m-auto flex basis-1/2 sm:justify-end">
-        <Button className="mr-2 max-w-fit cursor-pointer">
+      <div className="flex w-full max-w-full shrink-0 flex-wrap items-center justify-center gap-2 md:ml-auto md:w-auto md:justify-end">
+        <Button variant="ghost" className="cursor-pointer">
           <HeartIcon />
           Favorite
         </Button>
-        <Button
-          className="mr-2 max-w-fit cursor-pointer"
-          disabled={isSaving}
-          onClick={onSave}
-        >
-          <FileIcon />
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
         {typeof onDelete === "function" && ( // only render delete button on editors for updating scales, not on new scale creation
           <Button
-            variant="destructive"
-            className="max-w-fit cursor-pointer"
-            onClick={() => onDelete()}
+            variant="ghost"
+            className="cursor-pointer text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={onDelete}
           >
             <TrashIcon />
             Delete
           </Button>
         )}
+        <Button
+          className="cursor-pointer"
+          disabled={isSaving}
+          onClick={onSave}
+        >
+          <FloppyDiskIcon />
+          {isSaving ? "Saving..." : "Save"}
+        </Button>
       </div>
     </div>
   );
