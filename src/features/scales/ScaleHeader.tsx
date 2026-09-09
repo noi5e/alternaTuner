@@ -51,8 +51,8 @@ export function ScaleHeader({
   const displayedTitle = scaleTitle || "Untitled Scale";
 
   return (
-    <div className="flex w-full flex-col items-start gap-4 p-4 md:flex-row md:items-center">
-      <div className="flex w-full max-w-md min-w-0 flex-col items-start justify-center gap-1 md:flex-1 md:justify-start">
+    <div className="flex w-full flex-col items-center gap-4 p-4 md:flex-row">
+      <div className="flex w-full max-w-md min-w-0 flex-col items-center justify-center gap-1 md:flex-1 md:items-start md:justify-start">
         <span
           className={cn(
             "relative inline-block max-w-full min-w-0",
@@ -144,11 +144,7 @@ export function ScaleHeader({
             Delete
           </Button>
         )}
-        <Button
-          className="cursor-pointer"
-          disabled={isSaving}
-          onClick={onSave}
-        >
+        <Button className="cursor-pointer" disabled={isSaving} onClick={onSave}>
           <FloppyDiskIcon />
           {isSaving ? "Saving..." : "Save"}
         </Button>
