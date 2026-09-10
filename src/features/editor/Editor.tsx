@@ -27,7 +27,23 @@ function getPlayableNotes(notes: Note[]) {
   return sortedNotes.map((note, i) => ({ ...note, ...keys[i] }));
 }
 
-export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
+// get a JSON string representing current scale-in-editor, to compare to last-known database save.
+// used for deriving dirty save state (i.e., whether the current scale has unsaved changes)
+function getEditorScaleSnapshot(title: string, notes: Note[]) {
+  const trimmedTitle = title.trim() ? title.trim() : "Untitled Scale"; // make sure we're comparing Editor's title with database's consistently, given that db trims whitespace and defaults to "Untitled Scale" if the title is empty.
+
+  return JSON.stringify({
+    title: trimmedTitle,
+    frequencies: notes.map((note) => note.hertz).sort((a, b) => a - b),
+  });
+}
+
+export function Editor({
+  editorMode,
+  initialScale,
+  onDelete,
+  onSave,
+}: ScaleEditorProps) {
   const [notes, setNotes] = useState<Note[]>(
     () =>
       // state for notes that user enters/deletes, visible in UI as NoteButtons
@@ -41,6 +57,9 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
   const playingNotes = useRef<Map<string, PlayingNote>>(new Map()); // live PlayingNote objects, with built-in stop functions, that user is currently playing via keyboard, or pointer (mouse or touch). key is either "keyboard:${event.code}" or "pointer:${pointerId}"
   const audioContextRef = useRef<AudioContext | null>(null); // reuse audio context; avoid creating new audioCtx for each note, and allow sustained, overlapping notes
 
+  const [savedSnapshot, setSavedSnapshot] = useState(() =>
+    getEditorScaleSnapshot(scaleTitle, notes),
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -197,7 +216,11 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
     setSaveError(null);
 
     try {
-      await onSave({ title: scaleTitle, notes });
+      const savedScale = await onSave({ title: scaleTitle, notes });
+
+      setSavedSnapshot(
+        getEditorScaleSnapshot(savedScale.title, savedScale.scale_notes),
+      );
     } catch (error) {
       console.error("Error saving scale:", error);
       setSaveError(
@@ -208,14 +231,18 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
     }
   }
 
+  const isDirty = savedSnapshot !== getEditorScaleSnapshot(scaleTitle, notes);
+
   return (
     <main className="min-w-0 p-4 sm:p-6 lg:p-8">
       <ScaleHeader
         scaleTitle={scaleTitle}
+        editorMode={editorMode}
         notesCount={notes.length}
         onDelete={onDelete}
         onSave={saveScale}
         setScaleTitle={setScaleTitle}
+        isDirty={isDirty}
         isSaving={isSaving}
       />
       {saveError && (

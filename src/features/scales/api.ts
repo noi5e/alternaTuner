@@ -1,9 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { ScaleDraft } from "@/features/editor/editor.types";
-import type {
-  DatabaseScaleRow,
-  DatabaseScaleRowWithNotes,
-} from "@/features/scales/scale.types";
+import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
 
 function stripScaleDraftNotes(notes: ScaleDraft["notes"]): number[] {
   return notes.map(({ hertz }) => hertz);
@@ -35,18 +32,16 @@ export async function getScaleById(
 export async function createScale({
   title = "Untitled Scale",
   notes,
-}: ScaleDraft): Promise<DatabaseScaleRow> {
+}: ScaleDraft): Promise<DatabaseScaleRowWithNotes> {
   const p_notes = stripScaleDraftNotes(notes);
 
-  const { data, error } = await supabase
-    .rpc("create_scale_with_notes", {
-      p_title: title,
-      p_notes,
-    })
-    .single();
+  const { data, error } = await supabase.rpc("create_scale_with_notes", {
+    p_title: title,
+    p_notes,
+  });
 
   if (error) throw error;
-  return data;
+  return getScaleById(data.id); // the RPC function returns data without the associated notes, so we fetch the full scale by ID.
 }
 
 export async function updateScale(

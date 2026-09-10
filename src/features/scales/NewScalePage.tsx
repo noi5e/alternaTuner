@@ -21,11 +21,14 @@ export function NewScalePage() {
     navigate(`/scales/${routeSlugTranslator.fromUUID(created.id)}`, {
       replace: true,
     });
+
+    return created;
   }
 
   return (
     <Editor
       initialScale={{ title: "Untitled Scale", notes: [] }}
+      editorMode="create"
       onSave={handleCreate}
     />
   );

@@ -1,3 +1,5 @@
+import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
+
 type StartNoteHandler = (id: string, hertz: number) => void;
 type StopNoteHandler = (id: string) => void;
 
@@ -13,11 +15,14 @@ export type ScaleDraft = {
   notes: ScaleDraftNote[];
 };
 
+export type ScaleEditorMode = "create" | "edit";
+
 export type ScaleEditorProps = {
   key?: string;
   initialScale: ScaleDraft;
+  editorMode: ScaleEditorMode;
   onDelete?: DeleteScaleHandler;
-  onSave(scale: ScaleDraft): Promise<void>;
+  onSave(scale: ScaleDraft): Promise<DatabaseScaleRowWithNotes>;
 };
 
 export type NoteButtonProps = {

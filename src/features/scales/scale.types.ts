@@ -1,4 +1,7 @@
-import type { DeleteScaleHandler } from "@/features/editor/editor.types";
+import type {
+  DeleteScaleHandler,
+  ScaleEditorMode,
+} from "@/features/editor/editor.types";
 import type { Tables } from "@/lib/database.types"; // auto-generated Supabase types
 
 export type ScaleHeaderProps = {
@@ -7,6 +10,8 @@ export type ScaleHeaderProps = {
   scaleTitle: string;
   onSave: () => void;
   onDelete?: DeleteScaleHandler;
+  editorMode: ScaleEditorMode;
+  isDirty: boolean;
   isSaving: boolean;
 };
 

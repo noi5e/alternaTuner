@@ -21,8 +21,9 @@ export function ScalePage() {
   const { refreshScales } = useScalesContext();
 
   async function handleUpdate(draft: ScaleDraft) {
-    await updateScale(scale.id, draft);
+    const saved = await updateScale(scale.id, draft);
     await refreshScales();
+    return saved;
   }
 
   async function handleDelete() {
@@ -37,6 +38,7 @@ export function ScalePage() {
     <Editor
       key={scale.id}
       initialScale={{ title: scale.title, notes: getEditableScale(scale) }}
+      editorMode="edit"
       onDelete={handleDelete}
       onSave={handleUpdate}
     />

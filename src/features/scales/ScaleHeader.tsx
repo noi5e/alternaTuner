@@ -6,6 +6,8 @@ import {
   TrashIcon,
   PencilSimpleIcon,
   MusicNoteSimpleIcon,
+  CheckIcon,
+  CircleIcon,
 } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,8 @@ function EditTitlePencilIcon() {
 export function ScaleHeader({
   scaleTitle,
   notesCount,
+  isDirty,
+  editorMode,
   onDelete,
   onSave,
   isSaving,
@@ -49,6 +53,8 @@ export function ScaleHeader({
   }, [isEditingTitle]);
 
   const displayedTitle = scaleTitle || "Untitled Scale";
+
+  const isSaved = editorMode === "edit" && !isDirty;
 
   return (
     <div className="flex w-full flex-col items-center gap-4 p-4 md:flex-row">
@@ -144,9 +150,25 @@ export function ScaleHeader({
             Delete
           </Button>
         )}
-        <Button className="cursor-pointer" disabled={isSaving} onClick={onSave}>
-          <FloppyDiskIcon />
-          {isSaving ? "Saving..." : "Save"}
+        <Button
+          className="cursor-pointer"
+          disabled={isSaving || isSaved}
+          onClick={onSave}
+        >
+          {isSaved && !isSaving ? (
+            <CheckIcon aria-hidden="true" />
+          ) : isDirty && !isSaving ? (
+            <CircleIcon weight="fill" aria-hidden="true" className="size-2!" />
+          ) : (
+            <FloppyDiskIcon aria-hidden="true" />
+          )}
+          {isSaving
+            ? "Saving…"
+            : isSaved
+              ? "Saved"
+              : editorMode === "create"
+                ? "Save scale"
+                : "Save changes"}
         </Button>
       </div>
     </div>
