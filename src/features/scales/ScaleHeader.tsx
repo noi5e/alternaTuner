@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   FloppyDiskIcon,
   HeartIcon,
-  TrashIcon,
   PencilSimpleIcon,
   MusicNoteSimpleIcon,
   CheckIcon,
@@ -13,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+import { DeleteScaleDialog } from "@/features/scales/DeleteScaleDialog";
 
 import type { ScaleHeaderProps } from "@/features/scales/scale.types";
 
@@ -140,16 +141,10 @@ export function ScaleHeader({
           <HeartIcon />
           Favorite
         </Button>
-        {typeof onDelete === "function" && ( // only render delete button on editors for updating scales, not on new scale creation
-          <Button
-            variant="ghost"
-            className="cursor-pointer text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={onDelete}
-          >
-            <TrashIcon />
-            Delete
-          </Button>
-        )}
+        {editorMode === "edit" &&
+          onDelete && ( // only render delete button on editors for updating scales, not on new scale creation
+            <DeleteScaleDialog scaleTitle={scaleTitle} onConfirm={onDelete} />
+          )}
         <Button
           className="cursor-pointer"
           disabled={isSaving || isSaved}

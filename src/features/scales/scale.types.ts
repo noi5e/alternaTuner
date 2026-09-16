@@ -41,6 +41,11 @@ export type SideBarScale = {
   noteCount: number;
 };
 
+export type DeleteScaleDialogProps = {
+  scaleTitle: string;
+  onConfirm: DeleteScaleHandler;
+};
+
 export type ScalesOutletContext = {
   // define type to avoid redundant type casting in child components, which depend on refreshScales() passed to them through Outlet context.
   refreshScales: () => Promise<void>; // thin wrapper of React Router's useOutletContext() hook
