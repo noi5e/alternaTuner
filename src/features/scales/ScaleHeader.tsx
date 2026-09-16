@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  FloppyDiskIcon,
   HeartIcon,
   PencilSimpleIcon,
   MusicNoteSimpleIcon,
@@ -27,6 +26,16 @@ function EditTitlePencilIcon() {
     <PencilSimpleIcon
       className="size-5 shrink-0 cursor-pointer text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
       aria-hidden="true"
+    />
+  );
+}
+
+function DirtyStateIcon() {
+  return (
+    <CircleIcon
+      weight="fill"
+      aria-hidden="true"
+      className="size-2! text-amber-400 dark:text-amber-700"
     />
   );
 }
@@ -153,9 +162,9 @@ export function ScaleHeader({
           {isSaved && !isSaving ? (
             <CheckIcon aria-hidden="true" />
           ) : isDirty && !isSaving ? (
-            <CircleIcon weight="fill" aria-hidden="true" className="size-2!" />
+            <DirtyStateIcon />
           ) : (
-            <FloppyDiskIcon aria-hidden="true" />
+            <DirtyStateIcon />
           )}
           {isSaving
             ? "Saving…"
