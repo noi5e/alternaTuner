@@ -1,9 +1,14 @@
-import { Editor } from "@/features/editor/Editor";
-import type { ScaleDraft } from "@/features/editor/editor.types";
-import { createScale } from "@/features/scales/api";
 import { useNavigate } from "react-router";
+
+import { Editor } from "@/features/editor/Editor";
+
+import { createScale } from "@/features/scales/api";
 import { useScalesContext } from "@/features/scales/useScalesContext";
 import { routeSlugTranslator } from "@/lib/routeSlug";
+
+import { toast } from "sonner";
+
+import type { ScaleDraft } from "@/features/editor/editor.types";
 
 export function NewScalePage() {
   const navigate = useNavigate();
@@ -21,6 +26,8 @@ export function NewScalePage() {
     navigate(`/scales/${routeSlugTranslator.fromUUID(created.id)}`, {
       replace: true,
     });
+
+    toast.success(`Saved scale: ${created.title}`);
 
     return created;
   }

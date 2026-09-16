@@ -152,7 +152,7 @@ export function ScaleHeader({
         </Button>
         {editorMode === "edit" &&
           onDelete && ( // only render delete button on editors for updating scales, not on new scale creation
-            <DeleteScaleDialog scaleTitle={scaleTitle} onConfirm={onDelete} />
+            <DeleteScaleDialog scaleTitle={displayedTitle} onConfirm={onDelete} />
           )}
         <Button
           className="cursor-pointer"

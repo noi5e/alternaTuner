@@ -29,7 +29,7 @@ export function DeleteScaleDialog({
     setIsDeleting(true);
 
     try {
-      await onConfirm();
+      await onConfirm(scaleTitle);
       setOpen(false);
     } catch (error) {
       console.error("Failed to delete scale:", error);

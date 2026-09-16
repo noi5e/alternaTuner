@@ -3,7 +3,7 @@ import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
 type StartNoteHandler = (id: string, hertz: number) => void;
 type StopNoteHandler = (id: string) => void;
 
-export type DeleteScaleHandler = () => Promise<void>;
+export type DeleteScaleHandler = (scaleTitle: string) => Promise<void>;
 
 export type ScaleDraftNote = {
   hertz: number;

@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 import { SiteNav } from "@/app/SiteNav";
+import { Toaster } from "@/components/ui/sonner";
 
 export function AppLayout() {
   return (
@@ -8,6 +9,7 @@ export function AppLayout() {
       <main>
         <Outlet />
       </main>
+      <Toaster position="bottom-right" closeButton />
     </>
   );
 }
