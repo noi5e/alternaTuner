@@ -71,6 +71,7 @@ export function ScalesLayout() {
           isLoading={!hasLoadedScales && scalesRefreshing}
           isRefreshing={hasLoadedScales && scalesRefreshing}
           error={scalesError}
+          onRetry={() => void refreshScales()}
         />
       )}
       <Outlet context={{ refreshScales }} />

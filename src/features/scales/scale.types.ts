@@ -23,6 +23,7 @@ export type ScaleSideBarProps = {
   isLoading: boolean;
   isRefreshing: boolean;
   error: string | null;
+  onRetry: () => void;
 };
 
 export type ScaleSideBarLinkProps = {
@@ -34,6 +35,7 @@ export type ScaleSideBarLinkProps = {
 
 export type ScaleListErrorProps = {
   message: string;
+  onRetry: () => void;
 };
 
 // link to user's individual scale in sidebar

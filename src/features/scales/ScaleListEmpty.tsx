@@ -1,8 +1,18 @@
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+
 function ScaleListEmpty() {
   return (
-    <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-      No saved scales yet.
-    </p>
+    <Empty className="min-h-48 px-4 py-6">
+      <EmptyHeader>
+        <EmptyTitle className="text-base">No saved scales yet</EmptyTitle>
+        <EmptyDescription>Create a new scale to get started.</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   );
 }
 

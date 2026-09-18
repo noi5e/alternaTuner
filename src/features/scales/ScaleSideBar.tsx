@@ -23,6 +23,7 @@ export function ScaleSideBar({
   isLoading,
   isRefreshing,
   error,
+  onRetry,
 }: ScaleSideBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,34 +61,37 @@ export function ScaleSideBar({
         {isLoading ? (
           <ScaleListSkeleton />
         ) : error && !hasLoadedScales ? (
-          <ScaleListError message={error} />
-        ) : userScales.length === 0 ? (
-          <ScaleListEmpty />
-        ) : error && hasLoadedScales ? (
-          <div
-            role="alert"
-            className="mb-2 flex items-start gap-2 px-2 py-2 text-sm text-muted-foreground"
-          >
-            <WarningCircleIcon
-              aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0"
-            />
-            <p>Couldn’t refresh scales. Showing the last loaded list.</p>
-          </div>
+          <ScaleListError message={error} onRetry={onRetry} />
         ) : (
-          <ul className="w-full min-w-0 space-y-1">
-            {userScales.map((scale) => {
-              return (
-                <ScaleSideBarLink
-                  key={scale.id}
-                  id={scale.id}
-                  title={scale.title}
-                  noteCount={scale.noteCount}
-                  onNavigate={() => setIsOpen(false)}
+          <>
+            {error && hasLoadedScales && (
+              <div
+                role="alert"
+                className="mb-2 flex items-start gap-2 px-2 py-2 text-sm text-muted-foreground"
+              >
+                <WarningCircleIcon
+                  aria-hidden="true"
+                  className="mt-0.5 size-4 shrink-0"
                 />
-              );
-            })}
-          </ul>
+                <p>Couldn’t refresh scales. Showing the last loaded list.</p>
+              </div>
+            )}
+            {userScales.length === 0 ? (
+              <ScaleListEmpty />
+            ) : (
+              <ul className="w-full min-w-0 space-y-1">
+                {userScales.map((scale) => (
+                  <ScaleSideBarLink
+                    key={scale.id}
+                    id={scale.id}
+                    title={scale.title}
+                    noteCount={scale.noteCount}
+                    onNavigate={() => setIsOpen(false)}
+                  />
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </nav>
 

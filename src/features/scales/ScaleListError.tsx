@@ -1,14 +1,31 @@
 import { WarningCircleIcon } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import type { ScaleListErrorProps } from "./scale.types";
 
-function ScaleListError({ message }: ScaleListErrorProps) {
+function ScaleListError({ message, onRetry }: ScaleListErrorProps) {
   return (
-    <div role="alert" className="space-y-3 px-3 py-4">
-      <div className="flex gap-2 text-sm text-destructive">
-        <WarningCircleIcon className="mt-0.5 size-4 shrink-0" />
-        <p>{message}</p>
-      </div>
-    </div>
+    <Empty className="min-h-48 px-4 py-6" role="alert">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <WarningCircleIcon aria-hidden="true" />
+        </EmptyMedia>
+        <EmptyTitle className="text-base">Couldn’t load scales.</EmptyTitle>
+        <EmptyDescription>{message}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          Try again
+        </Button>
+      </EmptyContent>
+    </Empty>
   );
 }
 
