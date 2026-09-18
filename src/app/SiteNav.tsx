@@ -1,10 +1,13 @@
+import { Link, useNavigate } from "react-router";
+
+import { toast } from "sonner";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { Link, useNavigate } from "react-router";
 
 import { useAuth } from "@/features/auth/AuthContext";
 
@@ -13,8 +16,15 @@ export function SiteNav() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-    await signOut();
-    navigate("/login");
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      toast.error("Couldn't log out.", {
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+      });
+    }
   }
 
   return (

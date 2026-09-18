@@ -8,7 +8,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { claims, loading } = useAuthClaims();
 
   async function signOut() {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   }
 
   return (
