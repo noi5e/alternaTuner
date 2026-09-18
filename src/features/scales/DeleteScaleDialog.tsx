@@ -33,6 +33,8 @@ export function DeleteScaleDialog({
       setOpen(false);
     } catch (error) {
       console.error("Failed to delete scale:", error);
+      // Return focus to the header, where the failure is displayed.
+      setOpen(false);
     } finally {
       setIsDeleting(false);
     }

@@ -13,6 +13,8 @@ export type ScaleHeaderProps = {
   editorMode: ScaleEditorMode;
   isDirty: boolean;
   isSaving: boolean;
+  saveError: string | null;
+  onDismissSaveError: () => void;
 };
 
 export type ScaleSideBarProps = {

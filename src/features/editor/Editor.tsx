@@ -244,12 +244,9 @@ export function Editor({
         setScaleTitle={setScaleTitle}
         isDirty={isDirty}
         isSaving={isSaving}
+        saveError={saveError}
+        onDismissSaveError={() => setSaveError(null)}
       />
-      {saveError && (
-        <p role="alert" className="px-4 text-sm text-red-600">
-          {saveError}
-        </p>
-      )}
       <NoteForm onCreateNote={createNote} />
       <NotesList
         notes={notes}
