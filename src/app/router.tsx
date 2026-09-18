@@ -7,6 +7,7 @@ import { AppLayout } from "@/app/AppLayout.tsx";
 import { LoginForm } from "@/features/auth/LoginForm.tsx";
 import { NewScalePage } from "@/features/scales/NewScalePage";
 import { ScalePage } from "@/features/scales/ScalePage";
+import { ScaleLoadError } from "@/features/scales/ScaleLoadError";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
                 path: ":scaleSlug",
                 loader: scaleLoader,
                 element: <ScalePage />,
+                errorElement: <ScaleLoadError />,
               },
             ],
           },
