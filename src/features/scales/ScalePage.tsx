@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { toast } from "sonner";
 
 import { useScalesContext } from "@/features/scales/useScalesContext";
@@ -19,7 +19,6 @@ function getEditableScale(
 export function ScalePage() {
   const { scale } = useLoaderData() as { scale: DatabaseScaleRowWithNotes };
 
-  const navigate = useNavigate();
   const { refreshScales } = useScalesContext();
 
   async function handleUpdate(draft: ScaleDraft) {
@@ -31,10 +30,6 @@ export function ScalePage() {
   async function handleDelete(scaleTitle: string) {
     await deleteScale(scale.id);
     await refreshScales();
-
-    // The current route now points at a deleted database record.
-    navigate("/scales/new", { replace: true });
-
     toast.success(`Scale deleted: ${scaleTitle}`);
   }
 

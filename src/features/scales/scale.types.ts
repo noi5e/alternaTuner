@@ -8,6 +8,7 @@ export type ScaleHeaderProps = {
   notesCount: number;
   setScaleTitle: (newTitle: string) => void;
   scaleTitle: string;
+  isEditingAllowed: boolean;
   onSave: () => void;
   onDelete?: DeleteScaleHandler;
   editorMode: ScaleEditorMode;
@@ -15,6 +16,7 @@ export type ScaleHeaderProps = {
   isSaving: boolean;
   saveError: string | null;
   onDismissSaveError: () => void;
+  isOpeningSavedScale: boolean;
 };
 
 export type ScaleSideBarProps = {
@@ -33,6 +35,12 @@ export type ScaleSideBarLinkProps = {
   onNavigate: () => void;
 };
 
+export type EditableScaleTitleProps = {
+  value: string;
+  isEditingAllowed: boolean;
+  onChange: (value: string) => void;
+};
+
 export type ScaleListErrorProps = {
   message: string;
   onRetry: () => void;
@@ -45,9 +53,19 @@ export type SideBarScale = {
   noteCount: number;
 };
 
+export type SaveScaleButtonProps = {
+  editorMode: ScaleEditorMode;
+  isDirty: boolean;
+  isSaving: boolean;
+  onSave: () => void;
+  isEditingAllowed: boolean;
+  isOpeningSavedScale: boolean;
+};
+
 export type DeleteScaleDialogProps = {
   scaleTitle: string;
   onConfirm: DeleteScaleHandler;
+  isSaving: boolean;
 };
 
 export type ScalesOutletContext = {

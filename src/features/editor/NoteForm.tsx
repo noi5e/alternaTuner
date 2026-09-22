@@ -37,7 +37,7 @@ function parseHertz(value: FormDataEntryValue | null): ParseHertzResult {
   return { success: true, value: hertz };
 }
 
-export function NoteForm({ onCreateNote }: NoteFormProps) {
+export function NoteForm({ onCreateNote, isEditingAllowed }: NoteFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -93,6 +93,7 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
                 id="hertz"
                 className="flex-1 rounded-none text-lg tabular-nums md:font-semibold"
                 name="hertz"
+                disabled={!isEditingAllowed}
                 min={MIN_HERTZ}
                 step="any"
                 type="number"
@@ -108,6 +109,7 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
                 aria-label="Add note"
                 className="shrink-0 cursor-pointer rounded-none"
                 size="icon"
+                disabled={!isEditingAllowed}
                 type="submit"
               >
                 <PlusIcon weight="bold" />

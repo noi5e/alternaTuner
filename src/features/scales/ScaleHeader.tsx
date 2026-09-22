@@ -12,6 +12,8 @@ export function ScaleHeader({
   notesCount,
   isDirty,
   editorMode,
+  isEditingAllowed,
+  isOpeningSavedScale,
   onDelete,
   onSave,
   isSaving,
@@ -44,7 +46,11 @@ export function ScaleHeader({
     <div className="flex w-full flex-col gap-3 p-4">
       <div className="flex w-full flex-col items-center gap-4 md:flex-row">
         <div className="flex w-full max-w-md min-w-0 flex-col items-center justify-center gap-1 md:flex-1 md:items-start md:justify-start">
-          <EditableScaleTitle value={scaleTitle} onChange={setScaleTitle} />
+          <EditableScaleTitle
+            value={scaleTitle}
+            isEditingAllowed={isEditingAllowed}
+            onChange={setScaleTitle}
+          />
           <span className="inline-flex items-center gap-1.5 px-2 text-sm font-normal text-muted-foreground not-italic">
             <MusicNoteSimpleIcon
               aria-hidden="true"
@@ -67,12 +73,15 @@ export function ScaleHeader({
             <DeleteScaleDialog
               scaleTitle={displayedTitle}
               onConfirm={handleDelete}
+              isSaving={isSaving}
             />
           )}
           <SaveScaleButton
             editorMode={editorMode}
             isDirty={isDirty}
             isSaving={isSaving}
+            isOpeningSavedScale={isOpeningSavedScale}
+            isEditingAllowed={isEditingAllowed}
             onSave={onSave}
           />
         </div>

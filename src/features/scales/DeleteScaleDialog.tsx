@@ -21,6 +21,7 @@ import type { DeleteScaleDialogProps } from "@/features/scales/scale.types";
 export function DeleteScaleDialog({
   scaleTitle,
   onConfirm,
+  isSaving,
 }: DeleteScaleDialogProps) {
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,6 +51,7 @@ export function DeleteScaleDialog({
       <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
+          disabled={isSaving}
           className="cursor-pointer text-destructive hover:bg-destructive/10 hover:text-destructive"
         >
           <TrashIcon />

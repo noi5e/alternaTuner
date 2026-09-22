@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useBlocker, useNavigate, useNavigation } from "react-router";
+import { toast } from "sonner";
 
 import type {
   ScaleEditorProps,
@@ -10,9 +12,12 @@ import type {
 import { ScaleHeader } from "@/features/scales/ScaleHeader";
 import { NoteForm } from "@/features/editor/NoteForm";
 import { NotesList } from "@/features/editor/NotesList";
+import { DirtyStateDialog } from "@/features/editor/DirtyStateDialog";
 
 import { getPlayingNote } from "@/features/editor/audio";
 import { getKeyboardRange, PLAYABLE_KEYS } from "@/features/editor/keyBindings";
+import { routeSlugTranslator } from "@/lib/routeSlug";
+import { Button } from "#components/ui/button";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
@@ -41,9 +46,75 @@ function getEditorScaleSnapshot(title: string, notes: Note[]) {
 export function Editor({
   editorMode,
   initialScale,
-  onDelete,
+  onDelete: handleDelete,
   onSave,
 }: ScaleEditorProps) {
+  const navigate = useNavigate();
+
+  const navigation = useNavigation();
+  const latestNavigation = useRef(navigation);
+  useEffect(() => {
+    // keep track of the latest navigation object to ensure that async operations like scale creation use the most recent navigation reference.
+    latestNavigation.current = navigation;
+  }, [navigation]);
+
+  // we need to track whether the component is mounted because of async operations like scale creation.
+  // this prevents odd UX behavior, as scale creation auto-navigates to the created scale, whereas the user might have already navigated away from the editor.
+  const isMounted = useRef(false);
+
+  // track whether user has accepted departure in DirtyStateDialog.
+  // this is so a user save, then user departure in succession doesn't trigger automatic navigation to saved scale, after the async save completes.
+  // instead the browser navigates to user's intended destination.
+  const hasAcceptedDeparture = useRef(false);
+
+  function confirmDeparture() {
+    if (blocker.state !== "blocked") return;
+
+    hasAcceptedDeparture.current = true;
+    blocker.proceed();
+  }
+
+  // track successful creation of a new scale, so that we can redirect to it once the creation is complete.
+  // because creation is asynchronous, we need to track its progress, along with various user navigation states, like whether the user has moved to a different page, or accepted departure in the dirty state dialog.
+  const [createdScaleId, setCreatedScaleId] = useState<string | null>(null);
+  const creationRedirectStarted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const [redirectError, setRedirectError] = useState<string | null>(null);
+  const [isOpeningSavedScale, setIsOpeningSavedScale] = useState(false);
+
+  const openSavedScale = useCallback(async () => {
+    if (createdScaleId === null) return;
+
+    setRedirectError(null);
+    setIsOpeningSavedScale(true);
+    allowNavigation.current = true;
+
+    try {
+      await navigate(
+        `/scales/${routeSlugTranslator.fromUUID(createdScaleId)}`,
+        { replace: true },
+      );
+    } catch {
+      if (!isMounted.current) return; // let's say the user saved, then navigated away from this scale. that means we abort the redirection to createdScale that typically happens.
+
+      allowNavigation.current = false;
+      setRedirectError(
+        "Your scale was saved, but its page could not be opened.",
+      );
+    } finally {
+      if (isMounted.current) {
+        setIsOpeningSavedScale(false);
+      }
+    }
+  }, [createdScaleId, navigate]);
+
   const [notes, setNotes] = useState<Note[]>(
     () =>
       // state for notes that user enters/deletes, visible in UI as NoteButtons
@@ -58,10 +129,13 @@ export function Editor({
   const audioContextRef = useRef<AudioContext | null>(null); // reuse audio context; avoid creating new audioCtx for each note, and allow sustained, overlapping notes
 
   const [savedSnapshot, setSavedSnapshot] = useState(() =>
+    // track dirty state by storing a snapshot of the last saved scale
     getEditorScaleSnapshot(scaleTitle, notes),
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const allowNavigation = useRef(false); // bypass to allow navigation, so that successful creation / deletion can navigate to a different page without triggering dirty state warnings.
 
   const getAudioContext = useCallback(() => {
     // reuse audioContext if one currently exists, otherwise create a new one.
@@ -210,7 +284,7 @@ export function Editor({
   }
 
   async function saveScale() {
-    if (isSaving) return;
+    if (isSaving || createdScaleId !== null) return;
 
     setIsSaving(true);
     setSaveError(null);
@@ -218,20 +292,94 @@ export function Editor({
     try {
       const savedScale = await onSave({ title: scaleTitle, notes });
 
+      if (!isMounted.current) return; // let's say the user saved, then navigated away from this scale. that means we abort the redirection to createdScale that typically happens.
+
       setSavedSnapshot(
         getEditorScaleSnapshot(savedScale.title, savedScale.scale_notes),
       );
+
+      if (editorMode === "create") {
+        setCreatedScaleId(savedScale.id);
+      }
     } catch (error) {
-      console.error("Error saving scale:", error);
-      setSaveError(
-        error instanceof Error ? error.message : "Could not save the scale.",
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "Could not save the scale.";
+
+      if (isMounted.current) {
+        setSaveError(errorMessage);
+      } else {
+        toast.error("Couldn't save the scale.", {
+          description: errorMessage,
+        });
+      }
     } finally {
-      setIsSaving(false);
+      if (isMounted.current) {
+        setIsSaving(false);
+      }
+    }
+  }
+
+  async function deleteScale(scaleTitle: string) {
+    if (!handleDelete) return;
+    await handleDelete(scaleTitle);
+
+    if (
+      isMounted.current &&
+      !hasAcceptedDeparture.current &&
+      latestNavigation.current.state === "idle"
+    ) {
+      // only do this if the current Editor is still mounted, ie. user hasn't navigated away while scale was being deleted.
+      // also, only auto-navigate if user hasn't accepted departure in the dirty state dialog.
+      allowNavigation.current = true;
+      navigate("/scales/new", { replace: true }); // The current route now points at a deleted database record, so navigate away
     }
   }
 
   const isDirty = savedSnapshot !== getEditorScaleSnapshot(scaleTitle, notes);
+
+  useEffect(() => {
+    if (!isDirty) return;
+
+    function warnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault(); // prevents the browser's default behavior of unloading the page, and instead triggers a confirmation dialog to warn the user
+      // this is to give the user a chance to confirm before leaving the page with unsaved changes.
+      // there is no way of changing the text in the confirmation dialog; the browser will display a default message.
+    }
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", warnBeforeUnload);
+    };
+  }, [isDirty]);
+
+  const blocker = useBlocker(() => isDirty && !allowNavigation.current); // block SPA navigation if there are unsaved changes.
+
+  // clean-state handling for newly created scales.
+  // handles the case where the user saves scale, then tries to navigate away immediately afterwards, bringing up dirty state dialog warning.
+  // once the save resolves and the scale is no longer dirty, the navigation can proceed automatically.
+  useEffect(() => {
+    if (isDirty) return; // if the scale is, or becomes dirty, we don't enable navigation.
+
+    if (blocker.state === "blocked") {
+      hasAcceptedDeparture.current = true; // state is clean, eg. scale has successfully saved.
+      blocker.proceed(); // therefore, unblock navigation.
+      return;
+    }
+
+    if (
+      createdScaleId === null || // check if a new scale has been created
+      blocker.state !== "unblocked" ||
+      hasAcceptedDeparture.current || // user has accepted departure in DirtyStateDialog
+      creationRedirectStarted.current // a redirect for the creation of a new scale has already started
+    ) {
+      return;
+    }
+
+    creationRedirectStarted.current = true;
+    void openSavedScale();
+  }, [blocker, isDirty, createdScaleId, navigate, openSavedScale]);
+
+  const isEditingAllowed = !isSaving && createdScaleId === null; // if the editor just created a new scale, then navigation to createdScale is pending. therefore disable editing until navigation completes.
 
   return (
     <main className="min-w-0 p-4 sm:p-6 lg:p-8">
@@ -239,21 +387,41 @@ export function Editor({
         scaleTitle={scaleTitle}
         editorMode={editorMode}
         notesCount={notes.length}
-        onDelete={onDelete}
+        onDelete={handleDelete ? deleteScale : undefined}
         onSave={saveScale}
         setScaleTitle={setScaleTitle}
         isDirty={isDirty}
+        isEditingAllowed={isEditingAllowed}
+        isOpeningSavedScale={isOpeningSavedScale}
         isSaving={isSaving}
         saveError={saveError}
         onDismissSaveError={() => setSaveError(null)}
       />
-      <NoteForm onCreateNote={createNote} />
+      {redirectError && (
+        <div role="alert">
+          <p>{redirectError}</p>
+          <Button
+            onClick={() => void openSavedScale()}
+            disabled={isOpeningSavedScale}
+          >
+            Open saved scale
+          </Button>
+        </div>
+      )}
+      <NoteForm isEditingAllowed={isEditingAllowed} onCreateNote={createNote} />
       <NotesList
+        isEditingAllowed={isEditingAllowed}
         notes={notes}
         onDelete={deleteNote}
         playingHertz={playingHertz}
         startNote={startNote}
         stopNote={stopNote}
+      />
+      <DirtyStateDialog
+        isOpen={blocker.state === "blocked"}
+        isSaving={isSaving}
+        onConfirm={confirmDeparture}
+        onCancel={blocker.reset}
       />
     </main>
   );

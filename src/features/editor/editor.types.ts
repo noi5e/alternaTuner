@@ -29,6 +29,7 @@ export type NoteButtonProps = {
   hertz: number;
   label?: string;
   isPlaying: boolean;
+  isEditingAllowed: boolean;
   onDelete: (hertz: number) => void;
   startNote: StartNoteHandler;
   stopNote: StopNoteHandler;
@@ -38,7 +39,15 @@ export type CreateNoteResult =
   { success: true } | { success: false; message: string };
 
 export type NoteFormProps = {
+  isEditingAllowed: boolean;
   onCreateNote: (hertz: number) => CreateNoteResult;
+};
+
+export type DirtyStateDialogProps = {
+  isOpen: boolean;
+  onConfirm: (() => void) | undefined;
+  isSaving: boolean;
+  onCancel: (() => void) | undefined;
 };
 
 export type ParseHertzResult =
@@ -46,6 +55,7 @@ export type ParseHertzResult =
 
 export type NotesListProps = {
   notes: Note[];
+  isEditingAllowed: boolean;
   onDelete: (hertz: number) => void;
   playingHertz: Set<number>;
   startNote: StartNoteHandler;

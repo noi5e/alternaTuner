@@ -1,33 +1,31 @@
 import { CheckIcon, CircleIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import type { ScaleEditorMode } from "@/features/editor/editor.types";
 
-type SaveScaleButtonProps = {
-  editorMode: ScaleEditorMode;
-  isDirty: boolean;
-  isSaving: boolean;
-  onSave: () => void;
-};
+import type { SaveScaleButtonProps } from "@/features/scales/scale.types";
 
 export function SaveScaleButton({
   editorMode,
   isDirty,
   isSaving,
+  isEditingAllowed,
+  isOpeningSavedScale,
   onSave,
 }: SaveScaleButtonProps) {
   const isSaved = editorMode === "edit" && !isDirty;
-  const label = isSaving
-    ? "Saving…"
-    : isSaved
-      ? "Saved"
-      : editorMode === "create"
-        ? "Save scale"
-        : "Save changes";
+  const label = isOpeningSavedScale
+    ? "Opening saved scale…"
+    : isSaving
+      ? "Saving…"
+      : isSaved
+        ? "Saved"
+        : editorMode === "create"
+          ? "Save scale"
+          : "Save changes";
 
   return (
     <Button
       className="cursor-pointer"
-      disabled={isSaving || isSaved}
+      disabled={isSaving || isSaved || !isEditingAllowed || isOpeningSavedScale}
       onClick={onSave}
     >
       {isSaved && !isSaving ? (

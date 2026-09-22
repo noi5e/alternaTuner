@@ -3,10 +3,7 @@ import { PencilSimpleIcon } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type EditableScaleTitleProps = {
-  value: string;
-  onChange: (value: string) => void;
-};
+import type { EditableScaleTitleProps } from "@/features/scales/scale.types";
 
 // Keep the measuring span and visible button geometrically identical.
 const titleLayoutClasses =
@@ -24,6 +21,7 @@ function EditTitlePencilIcon() {
 
 export function EditableScaleTitle({
   value,
+  isEditingAllowed,
   onChange,
 }: EditableScaleTitleProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -64,6 +62,7 @@ export function EditableScaleTitle({
           autoFocus
           aria-label="Scale Title"
           placeholder={displayedTitle}
+          disabled={!isEditingAllowed}
           onChange={(event) => setTitleInputValue(event.target.value)}
           onBlur={() => {
             const nextTitle = titleInputValue.trim();
@@ -97,6 +96,7 @@ export function EditableScaleTitle({
             setTitleInputValue(displayedTitle);
             setIsEditingTitle(true);
           }}
+          disabled={!isEditingAllowed}
           className={cn(
             titleLayoutClasses,
             "group absolute inset-0 h-full w-full cursor-text rounded-sm border-0 bg-transparent text-left text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",

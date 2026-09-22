@@ -15,6 +15,7 @@ export function NoteButton({
   hertz,
   label,
   isPlaying,
+  isEditingAllowed,
   onDelete,
   startNote,
   stopNote,
@@ -52,6 +53,7 @@ export function NoteButton({
             className="cursor-pointer text-gray-400 opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100"
             aria-label={`Delete ${hertz} Hz note`}
             variant="ghost"
+            disabled={!isEditingAllowed}
             size="icon"
             onClick={(e) => {
               e.stopPropagation();

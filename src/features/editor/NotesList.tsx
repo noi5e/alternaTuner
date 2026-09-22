@@ -5,6 +5,7 @@ export function NotesList({
   notes,
   onDelete,
   playingHertz,
+  isEditingAllowed,
   startNote,
   stopNote,
 }: NotesListProps) {
@@ -19,6 +20,7 @@ export function NotesList({
           startNote={startNote}
           stopNote={stopNote}
           isPlaying={playingHertz.has(note.hertz)}
+          isEditingAllowed={isEditingAllowed}
         />
       ))}
     </div>
