@@ -1,4 +1,5 @@
 import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
+import type { Blocker } from "react-router";
 
 type StartNoteHandler = (id: string, hertz: number) => void;
 type StopNoteHandler = (id: string) => void;
@@ -48,6 +49,16 @@ export type DirtyStateDialogProps = {
   onConfirm: (() => void) | undefined;
   isSaving: boolean;
   onCancel: (() => void) | undefined;
+};
+
+export type UseEditorRedirectsOptions = {
+  createdScaleId: string | null;
+  hasAcceptedDeparture: React.RefObject<boolean>;
+  isDirty: boolean;
+  isMounted: React.RefObject<boolean>;
+  blockerState: Blocker["state"];
+  allowNavigation: () => void;
+  blockNavigation: () => void;
 };
 
 export type ParseHertzResult =
