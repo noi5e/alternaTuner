@@ -1,4 +1,4 @@
-import type { Key } from "@/features/editor/editor.types";
+import type { Key, Note } from "@/features/editor/editor.types";
 
 function getAlphaNumericKey(char: string) {
   if (/^\d$/.test(char)) {
@@ -40,4 +40,15 @@ export function getKeyboardRange(noteCount: number): Key[] {
   const startIndex = Math.min(Math.max(centeredStartIndex, 0), maxStartIndex); // clamp to valid range, so higher note counts don't go out of bounds
 
   return PLAYABLE_KEYS.slice(startIndex, startIndex + noteCount);
+}
+
+// sort keys by hertz, assign keyDown codes so they're playable via keyboard
+export function getPlayableNotes(notes: Note[]) {
+  const sortedNotes = [...notes].sort((a, b) => a.hertz - b.hertz);
+
+  const keys = getKeyboardRange(sortedNotes.length);
+  if (keys.length !== sortedNotes.length)
+    throw new Error("Keyboard range does not match note count.");
+
+  return sortedNotes.map((note, i) => ({ ...note, ...keys[i] }));
 }

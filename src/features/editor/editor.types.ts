@@ -61,6 +61,17 @@ export type UseEditorRedirectsOptions = {
   blockNavigation: () => void;
 };
 
+export type UseNotePlayerProps = {
+  notes: Note[];
+};
+
+export type UseScaleEditorProps = {
+  initialScale: ScaleDraft;
+  editorMode: ScaleEditorMode;
+  isMounted: React.RefObject<boolean>;
+  onSave: (scale: ScaleDraft) => Promise<DatabaseScaleRowWithNotes>;
+};
+
 export type ParseHertzResult =
   { success: true; value: number } | { success: false; message: string };
 
