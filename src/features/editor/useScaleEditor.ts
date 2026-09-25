@@ -26,6 +26,8 @@ export function useScaleEditor({
   editorMode,
   isMounted,
   onSave,
+  saveStatus,
+  dispatchSaveStatus,
 }: UseScaleEditorProps) {
   const [notes, setNotes] = useState<Note[]>(
     () =>
@@ -37,14 +39,15 @@ export function useScaleEditor({
     initialScale.title || "Untitled Scale",
   ); // title of scale, editable by user
 
-  const [createdScaleId, setCreatedScaleId] = useState<string | null>(null);
+  const createdScaleId = "scaleId" in saveStatus ? saveStatus.scaleId : null;
 
   const [savedSnapshot, setSavedSnapshot] = useState(() =>
     // track dirty state by storing a snapshot of the last saved scale
     getEditorScaleSnapshot(scaleTitle, notes),
   );
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const isSaving = saveStatus.state === "saving";
+  const saveError =
+    saveStatus.state === "saveError" ? saveStatus.message : null;
 
   const isEditingAllowed = !isSaving && createdScaleId === null; // if the editor just created a new scale, then navigation to createdScale is pending. therefore disable editing until navigation completes.
 
@@ -80,8 +83,7 @@ export function useScaleEditor({
   async function saveScale() {
     if (isSaving || createdScaleId !== null) return;
 
-    setIsSaving(true);
-    setSaveError(null);
+    dispatchSaveStatus({ type: "saving" });
 
     try {
       const savedScale = await onSave({ title: scaleTitle, notes });
@@ -93,22 +95,28 @@ export function useScaleEditor({
       );
 
       if (editorMode === "create") {
-        setCreatedScaleId(savedScale.id);
+        // scale was created, ie. saved for the first time
+        dispatchSaveStatus({
+          type: "created",
+          payload: { scaleId: savedScale.id },
+        });
+      } else {
+        // scale was not new, ie. it was an existing scale being updated
+        dispatchSaveStatus({ type: "idle" });
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Could not save the scale.";
 
       if (isMounted.current) {
-        setSaveError(errorMessage);
+        dispatchSaveStatus({
+          type: "saveError",
+          payload: { message: errorMessage },
+        });
       } else {
         toast.error("Couldn't save the scale.", {
           description: errorMessage,
         });
-      }
-    } finally {
-      if (isMounted.current) {
-        setIsSaving(false);
       }
     }
   }
@@ -116,7 +124,9 @@ export function useScaleEditor({
   const isDirty = savedSnapshot !== getEditorScaleSnapshot(scaleTitle, notes);
 
   function dismissSaveError() {
-    setSaveError(null);
+    if (saveStatus.state === "saveError") {
+      dispatchSaveStatus({ type: "idle" });
+    }
   }
 
   return {

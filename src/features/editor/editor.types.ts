@@ -51,6 +51,22 @@ export type DirtyStateDialogProps = {
   onCancel: (() => void) | undefined;
 };
 
+export type SaveStatus =
+  | { state: "idle" }
+  | { state: "saving" }
+  | { state: "saveError"; message: string }
+  | { state: "created"; scaleId: string }
+  | { state: "redirecting"; scaleId: string }
+  | { state: "redirectError"; scaleId: string; message: string };
+
+export type SaveAction =
+  | { type: "idle" }
+  | { type: "saving" }
+  | { type: "saveError"; payload: { message: string } }
+  | { type: "created"; payload: { scaleId: string } }
+  | { type: "redirecting"; payload: { scaleId: string } }
+  | { type: "redirectError"; payload: { scaleId: string; message: string } };
+
 export type UseEditorRedirectsOptions = {
   createdScaleId: string | null;
   hasAcceptedDeparture: React.RefObject<boolean>;
@@ -59,6 +75,8 @@ export type UseEditorRedirectsOptions = {
   blockerState: Blocker["state"];
   allowNavigation: () => void;
   blockNavigation: () => void;
+  saveStatus: SaveStatus;
+  dispatchSaveStatus: React.Dispatch<SaveAction>;
 };
 
 export type UseNotePlayerProps = {
@@ -70,6 +88,8 @@ export type UseScaleEditorProps = {
   editorMode: ScaleEditorMode;
   isMounted: React.RefObject<boolean>;
   onSave: (scale: ScaleDraft) => Promise<DatabaseScaleRowWithNotes>;
+  saveStatus: SaveStatus;
+  dispatchSaveStatus: React.Dispatch<SaveAction>;
 };
 
 export type ParseHertzResult =

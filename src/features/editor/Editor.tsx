@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useReducer } from "react";
 
 // import types
 import type { ScaleEditorProps } from "@/features/editor/editor.types";
@@ -12,11 +12,13 @@ import { DirtyStateDialog } from "@/features/editor/DirtyStateDialog";
 // import shadcn components
 import { Button } from "@/components/ui/button";
 
-// import custom hooks
+// import custom hooks + reducers
 import { useEditorRedirects } from "@/features/editor/useEditorRedirects";
 import { useUnsavedChanges } from "@/features/editor/useUnsavedChanges";
 import { useNotePlayer } from "@/features/editor/useNotePlayer";
 import { useScaleEditor } from "@/features/editor/useScaleEditor";
+
+import { saveStatusReducer } from "@/features/editor/saveStatusReducer";
 
 export function Editor({
   editorMode,
@@ -33,6 +35,10 @@ export function Editor({
       isMounted.current = false;
     };
   }, []);
+
+  const [saveStatus, dispatchSaveStatus] = useReducer(saveStatusReducer, {
+    state: "idle",
+  });
 
   const {
     createNote,
@@ -52,6 +58,8 @@ export function Editor({
     editorMode,
     isMounted,
     onSave,
+    saveStatus,
+    dispatchSaveStatus,
   });
 
   const {
@@ -77,6 +85,8 @@ export function Editor({
     isDirty,
     isMounted,
     createdScaleId,
+    saveStatus,
+    dispatchSaveStatus,
   });
 
   const { playingHertz, startNote, stopNote, stopAllNotes } = useNotePlayer({
