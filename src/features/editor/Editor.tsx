@@ -25,6 +25,9 @@ export function Editor({
   initialScale,
   onDelete: handleDelete,
   onSave,
+  isFavorite,
+  isUpdatingFavorite,
+  onFavorite,
 }: ScaleEditorProps) {
   const isMounted = useRef(false);
   // keep isMounted ref up-to-date.
@@ -129,6 +132,9 @@ export function Editor({
         isSaving={isSaving}
         saveError={saveError}
         onDismissSaveError={dismissSaveError}
+        isFavorite={isFavorite}
+        onFavorite={onFavorite}
+        isUpdatingFavorite={isUpdatingFavorite}
       />
       {redirectError && (
         <div role="alert">

@@ -17,6 +17,9 @@ export type ScaleHeaderProps = {
   saveError: string | null;
   onDismissSaveError: () => void;
   isOpeningSavedScale: boolean;
+  onFavorite?: (isFavorite: boolean) => Promise<void>;
+  isFavorite?: boolean;
+  isUpdatingFavorite: boolean;
 };
 
 export type ScaleSideBarProps = {
@@ -35,10 +38,20 @@ export type ScaleSideBarLinkProps = {
   onNavigate: () => void;
 };
 
+export type ScalePageContentProps = {
+  scale: DatabaseScaleRowWithNotesAndDetails;
+};
+
 export type EditableScaleTitleProps = {
   value: string;
   isEditingAllowed: boolean;
   onChange: (value: string) => void;
+};
+
+export type FavoriteButtonProps = {
+  isFavorite: boolean;
+  onFavorite: (isFavorite: boolean) => Promise<void>;
+  isUpdatingFavorite: boolean;
 };
 
 export type ScaleListErrorProps = {
@@ -76,7 +89,7 @@ export type ScalesOutletContext = {
 // single row from scale_notes table, with foreign key scale_id to scales table
 export type DatabaseScaleNoteRow = Tables<"scale_notes">;
 
-// single row from scales table, without its associated scale_notes
+// single row from scales table (without its associated scale_notes, which are in another table)
 export type DatabaseScaleRow = Tables<"scales">;
 
 // single row from scales table WITH its associated scale_notes
@@ -86,4 +99,9 @@ export type DatabaseScaleRowWithNotes = Pick<
 > & {
   // drop owner_id from the type, since API doesn't query it.
   scale_notes: DatabaseScaleNoteRow[];
+};
+
+// includes the favorite status
+export type DatabaseScaleRowWithNotesAndDetails = DatabaseScaleRowWithNotes & {
+  isFavorite: boolean;
 };

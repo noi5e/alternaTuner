@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { HeartIcon, MusicNoteSimpleIcon } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
+import { MusicNoteSimpleIcon } from "@phosphor-icons/react";
+
 import { DeleteScaleDialog } from "@/features/scales/DeleteScaleDialog";
 import { EditableScaleTitle } from "@/features/scales/EditableScaleTitle";
 import { SaveScaleButton } from "@/features/scales/SaveScaleButton";
 import { ScaleActionError } from "@/features/scales/ScaleActionError";
+import { FavoriteButton } from "./FavoriteButton";
+
 import type { ScaleHeaderProps } from "@/features/scales/scale.types";
 
 export function ScaleHeader({
@@ -20,6 +22,9 @@ export function ScaleHeader({
   saveError,
   onDismissSaveError,
   setScaleTitle,
+  isFavorite = false,
+  onFavorite,
+  isUpdatingFavorite,
 }: ScaleHeaderProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -63,11 +68,12 @@ export function ScaleHeader({
         </div>
 
         <div className="flex w-full max-w-full shrink-0 flex-wrap items-center justify-center gap-2 md:ml-auto md:w-auto md:justify-end">
-          {editorMode === "edit" && (
-            <Button variant="ghost" className="cursor-pointer">
-              <HeartIcon />
-              Favorite
-            </Button>
+          {editorMode === "edit" && onFavorite && (
+            <FavoriteButton
+              isFavorite={isFavorite}
+              onFavorite={onFavorite}
+              isUpdatingFavorite={isUpdatingFavorite}
+            />
           )}
           {editorMode === "edit" && onDelete && (
             <DeleteScaleDialog

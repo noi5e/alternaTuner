@@ -28,6 +28,7 @@ export function NewScalePage() {
       initialScale={{ title: "Untitled Scale", notes: [] }}
       editorMode="create"
       onSave={handleCreate}
+      isUpdatingFavorite={false}
     />
   );
 }

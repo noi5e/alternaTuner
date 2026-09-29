@@ -1,45 +1,13 @@
 import { useLoaderData } from "react-router";
-import { toast } from "sonner";
 
-import { useScalesContext } from "@/features/scales/useScalesContext";
+import { ScalePageContent } from "@/features/scales/ScalePageContent";
 
-import { Editor } from "@/features/editor/Editor";
-import type { ScaleDraft } from "@/features/editor/editor.types";
-import { updateScale, deleteScale } from "@/features/scales/api.ts";
-import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
-
-function getEditableScale(
-  scale: DatabaseScaleRowWithNotes,
-): ScaleDraft["notes"] {
-  return [...scale.scale_notes]
-    .sort((a, b) => a.position - b.position)
-    .map(({ hertz }) => ({ hertz }));
-}
+import type { DatabaseScaleRowWithNotesAndDetails } from "@/features/scales/scale.types";
 
 export function ScalePage() {
-  const { scale } = useLoaderData() as { scale: DatabaseScaleRowWithNotes };
+  const { scale } = useLoaderData() as {
+    scale: DatabaseScaleRowWithNotesAndDetails;
+  };
 
-  const { refreshScales } = useScalesContext();
-
-  async function handleUpdate(draft: ScaleDraft) {
-    const saved = await updateScale(scale.id, draft);
-    await refreshScales();
-    return saved;
-  }
-
-  async function handleDelete(scaleTitle: string) {
-    await deleteScale(scale.id);
-    await refreshScales();
-    toast.success(`Scale deleted: ${scaleTitle}`);
-  }
-
-  return (
-    <Editor
-      key={scale.id}
-      initialScale={{ title: scale.title, notes: getEditableScale(scale) }}
-      editorMode="edit"
-      onDelete={handleDelete}
-      onSave={handleUpdate}
-    />
-  );
+  return <ScalePageContent key={scale.id} scale={scale} />;
 }

@@ -21,9 +21,12 @@ export type ScaleEditorMode = "create" | "edit";
 export type ScaleEditorProps = {
   key?: string;
   initialScale: ScaleDraft;
+  isFavorite?: boolean;
+  isUpdatingFavorite: boolean;
   editorMode: ScaleEditorMode;
   onDelete?: DeleteScaleHandler;
   onSave(scale: ScaleDraft): Promise<DatabaseScaleRowWithNotes>;
+  onFavorite?: (isFavorite: boolean) => Promise<void>;
 };
 
 export type NoteButtonProps = {
