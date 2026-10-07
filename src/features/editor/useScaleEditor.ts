@@ -22,6 +22,7 @@ function getEditorScaleSnapshot(title: string, notes: ScaleDraftNote[]) {
 }
 
 export function useScaleEditor({
+  canManageScale,
   initialScale,
   editorMode,
   isMounted,
@@ -49,7 +50,8 @@ export function useScaleEditor({
   const saveError =
     saveStatus.state === "saveError" ? saveStatus.message : null;
 
-  const isEditingAllowed = !isSaving && createdScaleId === null; // if the editor just created a new scale, then navigation to createdScale is pending. therefore disable editing until navigation completes.
+  const isEditingAllowed =
+    canManageScale && Boolean(onSave) && !isSaving && createdScaleId === null; // if the editor just created a new scale, then navigation to createdScale is pending. therefore disable editing until navigation completes.
 
   // get user input, create NoteButton component in UI
   function createNote(hertz: number): CreateNoteResult {
@@ -81,7 +83,7 @@ export function useScaleEditor({
   }
 
   async function saveScale() {
-    if (isSaving || createdScaleId !== null) return;
+    if (isSaving || createdScaleId !== null || !onSave) return;
 
     dispatchSaveStatus({ type: "saving" });
 

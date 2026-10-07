@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
 import { useAuth } from "@/features/auth/AuthContext";
-import { listScales } from "@/features/scales/api";
+import { listUserScales } from "@/features/scales/api";
 
 import type {
   DatabaseScaleRowWithNotes,
@@ -42,7 +42,7 @@ export function ScalesLayout() {
     try {
       setScalesRefreshing(true);
       setScalesError(null);
-      const scales = await listScales();
+      const scales = await listUserScales(userId);
       setUserScales(scales);
       setHasLoadedScales(true);
     } catch (error) {

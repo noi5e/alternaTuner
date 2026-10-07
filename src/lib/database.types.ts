@@ -147,6 +147,10 @@ export type Database = {
         Args: { p_is_favorite: boolean; p_scale_id: string }
         Returns: undefined
       }
+      set_scale_visibility: {
+        Args: { p_is_public: boolean; p_scale_id: string }
+        Returns: undefined
+      }
       update_scale_with_notes: {
         Args: { p_notes?: number[]; p_scale_id: string; p_title: string }
         Returns: {

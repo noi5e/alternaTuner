@@ -21,11 +21,15 @@ import { useScaleEditor } from "@/features/editor/useScaleEditor";
 import { saveStatusReducer } from "@/features/editor/saveStatusReducer";
 
 export function Editor({
+  canManageScale,
   editorMode,
   initialScale,
   onDelete: handleDelete,
   onSave,
   isFavorite,
+  isPublic,
+  isUpdatingVisibility,
+  onVisibilityChange,
   isUpdatingFavorite,
   onFavorite,
 }: ScaleEditorProps) {
@@ -57,6 +61,7 @@ export function Editor({
     dismissSaveError,
     createdScaleId,
   } = useScaleEditor({
+    canManageScale,
     initialScale,
     editorMode,
     isMounted,
@@ -124,17 +129,20 @@ export function Editor({
         editorMode={editorMode}
         notesCount={notes.length}
         onDelete={handleDelete ? deleteScale : undefined}
-        onSave={saveScale}
+        onSave={onSave ? saveScale : undefined}
         setScaleTitle={setScaleTitle}
         isDirty={isDirty}
         isEditingAllowed={isEditingAllowed}
         isOpeningSavedScale={isOpeningSavedScale}
+        isPublic={isPublic}
         isSaving={isSaving}
         saveError={saveError}
         onDismissSaveError={dismissSaveError}
         isFavorite={isFavorite}
         onFavorite={onFavorite}
         isUpdatingFavorite={isUpdatingFavorite}
+        onVisibilityChange={onVisibilityChange}
+        isUpdatingVisibility={isUpdatingVisibility}
       />
       {redirectError && (
         <div role="alert">
@@ -147,11 +155,14 @@ export function Editor({
           </Button>
         </div>
       )}
-      <NoteForm
-        isEditingAllowed={isEditingAllowed}
-        onCreateNote={handleCreateNote}
-      />
+      {canManageScale && (
+        <NoteForm
+          isEditingAllowed={isEditingAllowed}
+          onCreateNote={handleCreateNote}
+        />
+      )}
       <NotesList
+        canManageScale={canManageScale}
         isEditingAllowed={isEditingAllowed}
         notes={notes}
         onDelete={handleDeleteNote}

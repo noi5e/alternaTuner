@@ -9,7 +9,7 @@ export type ScaleHeaderProps = {
   setScaleTitle: (newTitle: string) => void;
   scaleTitle: string;
   isEditingAllowed: boolean;
-  onSave: () => void;
+  onSave?: () => void;
   onDelete?: DeleteScaleHandler;
   editorMode: ScaleEditorMode;
   isDirty: boolean;
@@ -19,7 +19,10 @@ export type ScaleHeaderProps = {
   isOpeningSavedScale: boolean;
   onFavorite?: (isFavorite: boolean) => Promise<void>;
   isFavorite?: boolean;
+  isPublic?: boolean;
   isUpdatingFavorite: boolean;
+  isUpdatingVisibility?: boolean;
+  onVisibilityChange?: (isPublic: boolean) => Promise<void>;
 };
 
 export type ScaleSideBarProps = {
@@ -95,13 +98,13 @@ export type DatabaseScaleRow = Tables<"scales">;
 // single row from scales table WITH its associated scale_notes
 export type DatabaseScaleRowWithNotes = Pick<
   DatabaseScaleRow,
-  "id" | "title" | "created_at" | "updated_at"
+  "id" | "title" | "created_at" | "updated_at" | "owner_id"
 > & {
-  // drop owner_id from the type, since API doesn't query it.
   scale_notes: DatabaseScaleNoteRow[];
 };
 
-// includes the favorite status
+// includes favorite status, public visibility, and other metadata
 export type DatabaseScaleRowWithNotesAndDetails = DatabaseScaleRowWithNotes & {
   isFavorite: boolean;
+  isPublic: boolean;
 };

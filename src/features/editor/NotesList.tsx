@@ -2,6 +2,7 @@ import type { NotesListProps } from "@/features/editor/editor.types";
 import { NoteButton } from "@/features/editor/NoteButton";
 
 export function NotesList({
+  canManageScale,
   notes,
   onDelete,
   playingHertz,
@@ -16,7 +17,7 @@ export function NotesList({
           key={note.hertz}
           hertz={note.hertz}
           label={note.label}
-          onDelete={onDelete}
+          onDelete={canManageScale ? onDelete : undefined}
           startNote={startNote}
           stopNote={stopNote}
           isPlaying={playingHertz.has(note.hertz)}

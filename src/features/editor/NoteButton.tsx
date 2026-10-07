@@ -49,21 +49,23 @@ export function NoteButton({
               {label}
             </Badge>
           )}
-          <Button
-            className="cursor-pointer text-gray-400 opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100"
-            aria-label={`Delete ${hertz} Hz note`}
-            variant="ghost"
-            disabled={!isEditingAllowed}
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(hertz);
-            }}
-            onPointerDown={(e) => e.stopPropagation()} // prevents note from playing when user clicks delete button
-            onPointerUp={(e) => e.stopPropagation()} // also prevents rare edge-case where note plays when user clicks delete button
-          >
-            <TrashIcon />
-          </Button>
+          {onDelete && (
+            <Button
+              className="cursor-pointer text-gray-400 opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100"
+              aria-label={`Delete ${hertz} Hz note`}
+              variant="ghost"
+              disabled={!isEditingAllowed}
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(hertz);
+              }}
+              onPointerDown={(e) => e.stopPropagation()} // prevents note from playing when user clicks delete button
+              onPointerUp={(e) => e.stopPropagation()} // also prevents rare edge-case where note plays when user clicks delete button
+            >
+              <TrashIcon />
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="absolute inset-0 flex items-center justify-center gap-1 p-0">

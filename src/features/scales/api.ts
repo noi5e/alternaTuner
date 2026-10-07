@@ -9,10 +9,13 @@ function stripScaleDraftNotes(notes: ScaleDraft["notes"]): number[] {
   return notes.map(({ hertz }) => hertz);
 }
 
-export async function listScales(): Promise<DatabaseScaleRowWithNotes[]> {
+export async function listUserScales(
+  ownerId: string,
+): Promise<DatabaseScaleRowWithNotes[]> {
   const { data, error } = await supabase
     .from("scales")
-    .select("id, title, created_at, updated_at, scale_notes(*)")
+    .select("id, title, created_at, updated_at, owner_id, scale_notes(*)")
+    .eq("owner_id", ownerId)
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
@@ -25,18 +28,19 @@ export async function getScaleById(
   const { data, error } = await supabase
     .from("scales")
     .select(
-      "id, title, created_at, updated_at, scale_notes(*), scale_favorites(user_id)",
+      "id, title, created_at, updated_at, owner_id, scale_notes(*), is_public, scale_favorites(user_id)",
     )
     .eq("id", scaleId)
     .single();
 
   if (error) throw error;
 
-  const { scale_favorites, ...scale } = data;
+  const { scale_favorites, is_public, ...scale } = data;
 
   return {
     ...scale,
     isFavorite: scale_favorites.length > 0,
+    isPublic: is_public,
   };
 }
 
@@ -79,6 +83,15 @@ export async function setScaleFavorite(id: string, isFavorite: boolean) {
   const { error } = await supabase.rpc("set_scale_favorite", {
     p_scale_id: id,
     p_is_favorite: isFavorite,
+  });
+
+  if (error) throw error;
+}
+
+export async function setScaleVisibility(id: string, isPublic: boolean) {
+  const { error } = await supabase.rpc("set_scale_visibility", {
+    p_scale_id: id,
+    p_is_public: isPublic,
   });
 
   if (error) throw error;

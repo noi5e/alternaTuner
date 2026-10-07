@@ -11,5 +11,14 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
 
-  return context;
+  function isOwner(ownerId: string): boolean {
+    return (
+      context !== null &&
+      !context.loading &&
+      context.claims !== null &&
+      context.claims.sub === ownerId
+    );
+  }
+
+  return { ...context, isOwner };
 }

@@ -8,7 +8,10 @@ import {
   updateScale,
   deleteScale,
   setScaleFavorite,
+  setScaleVisibility,
 } from "@/features/scales/api.ts";
+
+import { useAuth } from "@/features/auth/AuthContext";
 
 import type {
   DatabaseScaleRowWithNotesAndDetails,
@@ -27,6 +30,13 @@ function getEditableScale(
 export function ScalePageContent({ scale }: ScalePageContentProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(scale.isFavorite);
   const [isUpdatingFavorite, setIsUpdatingFavorite] = useState<boolean>(false);
+
+  const [isPublic, setIsPublic] = useState<boolean>(scale.isPublic);
+  const [isUpdatingVisibility, setIsUpdatingVisibility] =
+    useState<boolean>(false);
+
+  const { isOwner } = useAuth();
+  const canManageScale = isOwner(scale.owner_id);
 
   const { refreshScales } = useScalesContext();
 
@@ -62,17 +72,37 @@ export function ScalePageContent({ scale }: ScalePageContentProps) {
     }
   }
 
+  async function handleVisibilityChange(nextIsPublic: boolean) {
+    setIsUpdatingVisibility(true);
+    try {
+      await setScaleVisibility(scale.id, nextIsPublic);
+      setIsPublic(nextIsPublic);
+      toast.success(
+        nextIsPublic ? "Scale set to public" : "Scale set to private",
+      );
+    } catch (error) {
+      console.error("Failed to update visibility", error);
+      toast.error("There was an error updating the visibility of the scale");
+    } finally {
+      setIsUpdatingVisibility(false);
+    }
+  }
+
   return (
     <Editor
       initialScale={{
         title: scale.title,
         notes: getEditableScale(scale),
       }}
+      canManageScale={canManageScale}
       editorMode="edit"
-      onDelete={handleDelete}
-      onSave={handleUpdate}
+      onDelete={canManageScale ? handleDelete : undefined}
+      onSave={canManageScale ? handleUpdate : undefined}
       isFavorite={isFavorite}
+      isPublic={isPublic}
       isUpdatingFavorite={isUpdatingFavorite}
+      isUpdatingVisibility={isUpdatingVisibility}
+      onVisibilityChange={canManageScale ? handleVisibilityChange : undefined}
       onFavorite={handleFavorite}
     />
   );

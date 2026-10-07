@@ -25,10 +25,12 @@ export function NewScalePage() {
 
   return (
     <Editor
+      canManageScale={true}
       initialScale={{ title: "Untitled Scale", notes: [] }}
       editorMode="create"
       onSave={handleCreate}
       isUpdatingFavorite={false}
+      isUpdatingVisibility={false}
     />
   );
 }

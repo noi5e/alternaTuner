@@ -20,13 +20,17 @@ export type ScaleEditorMode = "create" | "edit";
 
 export type ScaleEditorProps = {
   key?: string;
+  canManageScale: boolean;
   initialScale: ScaleDraft;
   isFavorite?: boolean;
+  isPublic?: boolean;
   isUpdatingFavorite: boolean;
+  isUpdatingVisibility?: boolean;
   editorMode: ScaleEditorMode;
   onDelete?: DeleteScaleHandler;
-  onSave(scale: ScaleDraft): Promise<DatabaseScaleRowWithNotes>;
+  onSave?: (scale: ScaleDraft) => Promise<DatabaseScaleRowWithNotes>;
   onFavorite?: (isFavorite: boolean) => Promise<void>;
+  onVisibilityChange?: (isPublic: boolean) => Promise<void>;
 };
 
 export type NoteButtonProps = {
@@ -34,7 +38,7 @@ export type NoteButtonProps = {
   label?: string;
   isPlaying: boolean;
   isEditingAllowed: boolean;
-  onDelete: (hertz: number) => void;
+  onDelete?: (hertz: number) => void;
   startNote: StartNoteHandler;
   stopNote: StopNoteHandler;
 };
@@ -87,10 +91,11 @@ export type UseNotePlayerProps = {
 };
 
 export type UseScaleEditorProps = {
+  canManageScale: boolean;
   initialScale: ScaleDraft;
   editorMode: ScaleEditorMode;
   isMounted: React.RefObject<boolean>;
-  onSave: (scale: ScaleDraft) => Promise<DatabaseScaleRowWithNotes>;
+  onSave?: (scale: ScaleDraft) => Promise<DatabaseScaleRowWithNotes>;
   saveStatus: SaveStatus;
   dispatchSaveStatus: React.Dispatch<SaveAction>;
 };
@@ -99,6 +104,7 @@ export type ParseHertzResult =
   { success: true; value: number } | { success: false; message: string };
 
 export type NotesListProps = {
+  canManageScale: boolean;
   notes: Note[];
   isEditingAllowed: boolean;
   onDelete: (hertz: number) => void;
