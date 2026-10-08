@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { NavLink } from "react-router";
 
-import ScaleSideBarLink from "./ScaleSideBarLink";
-import ScaleListError from "./ScaleListError";
-import ScaleListSkeleton from "./ScaleListSkeleton";
-import ScaleListEmpty from "./ScaleListEmpty";
+import ScaleList from "@/features/scales/ScaleList";
+import ScaleListError from "@/features/scales/ScaleListError";
+import ScaleListSkeleton from "@/features/scales/ScaleListSkeleton";
+import ScaleListEmpty from "@/features/scales/ScaleListEmpty";
+import { ScaleListRefreshError } from "@/features/scales/ScaleListRefreshError";
+
+import { Button } from "@/components/ui/button";
 
 import {
   ArrowsClockwiseIcon,
   CaretDownIcon,
   PlusIcon,
-  WarningCircleIcon,
 } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-
 import type { ScaleSideBarProps } from "./scale.types";
 import { cn } from "@/lib/utils";
 
@@ -64,32 +64,14 @@ export function ScaleSideBar({
           <ScaleListError message={error} onRetry={onRetry} />
         ) : (
           <>
-            {error && hasLoadedScales && (
-              <div
-                role="alert"
-                className="mb-2 flex items-start gap-2 px-2 py-2 text-sm text-muted-foreground"
-              >
-                <WarningCircleIcon
-                  aria-hidden="true"
-                  className="mt-0.5 size-4 shrink-0"
-                />
-                <p>Couldn’t refresh scales. Showing the last loaded list.</p>
-              </div>
-            )}
+            {error && hasLoadedScales && <ScaleListRefreshError />}
             {userScales.length === 0 ? (
-              <ScaleListEmpty />
+              <ScaleListEmpty
+                title="No saved scales yet"
+                description="Create a new scale to get started."
+              />
             ) : (
-              <ul className="w-full min-w-0 space-y-1">
-                {userScales.map((scale) => (
-                  <ScaleSideBarLink
-                    key={scale.id}
-                    id={scale.id}
-                    title={scale.title}
-                    noteCount={scale.noteCount}
-                    onNavigate={() => setIsOpen(false)}
-                  />
-                ))}
-              </ul>
+              <ScaleList userScales={userScales} setIsOpen={setIsOpen} />
             )}
           </>
         )}

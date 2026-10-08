@@ -34,6 +34,16 @@ export type ScaleSideBarProps = {
   onRetry: () => void;
 };
 
+export type ScaleListProps = {
+  userScales: SideBarScale[];
+  setIsOpen: (open: boolean) => void;
+};
+
+export type ScaleListEmptyProps = {
+  title: string;
+  description: string;
+};
+
 export type ScaleSideBarLinkProps = {
   noteCount: number;
   title: string;
