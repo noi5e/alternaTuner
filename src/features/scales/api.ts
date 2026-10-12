@@ -22,6 +22,29 @@ export async function listUserScales(
   return data;
 }
 
+export async function listUserFavorites(
+  userId: string,
+): Promise<DatabaseScaleRowWithNotes[]> {
+  const { data, error } = await supabase
+    .from("scales")
+    .select(
+      `
+      id, title, created_at, updated_at, owner_id,
+      scale_notes(*),
+      scale_favorites!inner(user_id)
+    `,
+    )
+    .eq("scale_favorites.user_id", userId)
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data.map(({ scale_favorites, ...scale }) => {
+    void scale_favorites;
+    return scale;
+  });
+}
+
 export async function getScaleById(
   scaleId: string,
 ): Promise<DatabaseScaleRowWithNotesAndDetails> {
