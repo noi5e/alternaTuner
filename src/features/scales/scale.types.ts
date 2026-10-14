@@ -30,8 +30,13 @@ export type ScaleSideBarProps = {
   hasLoadedScales: boolean;
   isLoading: boolean;
   isRefreshing: boolean;
+  favorites: SideBarScale[];
+  hasLoadedFavorites: boolean;
+  favoritesRefreshing: boolean;
+  favoritesError: string | null;
   error: string | null;
   onRetry: () => void;
+  onRetryFavorites: () => void;
 };
 
 export type ScaleListProps = {
@@ -97,6 +102,13 @@ export type DeleteScaleDialogProps = {
 export type ScalesOutletContext = {
   // define type to avoid redundant type casting in child components, which depend on refreshScales() passed to them through Outlet context.
   refreshScales: () => Promise<void>; // thin wrapper of React Router's useOutletContext() hook
+  refreshFavorites: () => Promise<void>;
+};
+
+export type UseScalesListProps = {
+  userId: string | null;
+  authLoading: boolean;
+  apiMethod: (userId: string) => Promise<DatabaseScaleRowWithNotes[]>;
 };
 
 // single row from scale_notes table, with foreign key scale_id to scales table

@@ -24,6 +24,11 @@ export function ScaleSideBar({
   isRefreshing,
   error,
   onRetry,
+  favorites,
+  hasLoadedFavorites,
+  favoritesRefreshing,
+  favoritesError,
+  onRetryFavorites,
 }: ScaleSideBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
