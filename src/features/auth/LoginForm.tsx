@@ -46,6 +46,7 @@ function getAuthErrorMessage(error: unknown) {
 
 export function LoginForm() {
   const [sendingLink, setSendingLink] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
   const [email, setEmail] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -114,6 +115,8 @@ export function LoginForm() {
 
     if (error) {
       setAuthError(getAuthErrorMessage(error));
+    } else {
+      setLinkSent(true);
     }
 
     setSendingLink(false);
@@ -122,23 +125,28 @@ export function LoginForm() {
   // Show verification state
   if (verifyingMagicLink) {
     return (
-      <div>
-        <h1>Authentication</h1>
-        <p>Confirming your magic link...</p>
-        <p>Loading...</p>
+      <div className="flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center gap-2 bg-background p-6 text-center md:p-10">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Confirming your magic link...
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          You’ll be signed in shortly.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+    <div className="flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <form onSubmit={handleLogin}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-xl font-bold">Welcome to alternaTuner!</h1>
-                <FieldDescription>
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  Welcome to alternaTuner!
+                </h1>
+                <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="#">Sign up</a>
                 </FieldDescription>
               </div>
@@ -154,12 +162,21 @@ export function LoginForm() {
                 />
               </Field>
               <Field>
-                <Button type="submit" disabled={sendingLink || !email}>
-                  {sendingLink ? "Sending..." : "Send Magic Link"}
-                  {/* TO DO: add linkSent state to keep button disabled while waiting for user to confirm magic link, otherwise button reenables itself after Supabase Auth sends email, and user can spam the button*/}
+                <Button
+                  type="submit"
+                  disabled={sendingLink || !email || linkSent}
+                >
+                  {sendingLink
+                    ? "Sending..."
+                    : linkSent
+                      ? "Link Sent"
+                      : "Send Magic Link"}
                 </Button>
                 {authError && (
-                  <p className="text-sm text-destructive" role="alert">
+                  <p
+                    className="text-center text-sm text-destructive"
+                    role="alert"
+                  >
                     {authError}
                   </p>
                 )}
