@@ -40,8 +40,16 @@ export type ScaleSideBarProps = {
 };
 
 export type ScaleListProps = {
-  userScales: SideBarScale[];
-  setIsOpen: (open: boolean) => void;
+  contentClassName?: string;
+  label: string;
+  scales: SideBarScale[];
+  hasLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+  onRetry: () => void;
+  emptyTitle: string;
+  emptyDescription: string;
+  onNavigate: () => void;
 };
 
 export type ScaleListEmptyProps = {

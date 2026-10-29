@@ -38,17 +38,17 @@ export function ScalePageContent({ scale }: ScalePageContentProps) {
   const { isOwner } = useAuth();
   const canManageScale = isOwner(scale.owner_id);
 
-  const { refreshScales } = useScalesContext();
+  const { refreshScales, refreshFavorites } = useScalesContext();
 
   async function handleUpdate(draft: ScaleDraft) {
     const saved = await updateScale(scale.id, draft);
-    await refreshScales();
+    await Promise.all([refreshScales(), refreshFavorites()]);
     return saved;
   }
 
   async function handleDelete(scaleTitle: string) {
     await deleteScale(scale.id);
-    await refreshScales();
+    await Promise.all([refreshScales(), refreshFavorites()]);
     toast.success(`Scale deleted: ${scaleTitle}`);
   }
 
@@ -60,6 +60,7 @@ export function ScalePageContent({ scale }: ScalePageContentProps) {
       toast.success(
         nextIsFavorite ? "Added to favorites" : "Removed from favorites",
       );
+      await refreshFavorites();
     } catch (error) {
       console.error("Failed to update favorite status", error);
       toast.error(

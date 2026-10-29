@@ -1,10 +1,15 @@
-import { NavLink } from "react-router";
+import { useId } from "react";
+import { NavLink, useMatch } from "react-router";
 
 import type { ScaleSideBarLinkProps } from "./scale.types";
 
-import { Badge } from "@/components/ui/badge";
+import {
+  SidebarMenuItem,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+
 import { MusicNoteSimpleIcon } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
 function ScaleSideBarLink({
@@ -13,29 +18,37 @@ function ScaleSideBarLink({
   id,
   onNavigate,
 }: ScaleSideBarLinkProps) {
-  return (
-    <li key={id}>
-      <NavLink
-        to={`/scales/${routeSlugTranslator.fromUUID(id)}`}
-        className={({ isActive }) =>
-          cn(
-            "flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground",
-            "transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none",
-            isActive &&
-              "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
-          )
-        }
-        onClick={onNavigate}
-      >
-        <Badge variant="secondary" className="shrink-0">
-          <MusicNoteSimpleIcon data-icon="inline-start" weight="fill" />
-          <span className="text-xs">{noteCount}</span>
-        </Badge>
+  const to = `/scales/${routeSlugTranslator.fromUUID(id)}`;
+  const match = useMatch({ path: to, end: true });
 
-        <span className="min-w-0 flex-1 truncate">{title}</span>
-      </NavLink>
-    </li>
+  const htmlId = useId();
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        aria-describedby={`scale-link-note-count-${htmlId}`}
+        asChild
+        isActive={match !== null}
+        className="pr-16"
+      >
+        <NavLink to={to} onClick={onNavigate}>
+          <span>{title}</span>
+        </NavLink>
+      </SidebarMenuButton>
+
+      <SidebarMenuBadge
+        id={`scale-link-note-count-${htmlId}`}
+        className="min-w-10 gap-1 rounded-full border border-sidebar-border px-1.5 text-muted-foreground"
+      >
+        <MusicNoteSimpleIcon
+          aria-hidden="true"
+          className="size-3 shrink-0"
+          weight="fill"
+        />
+        <span>{noteCount}</span>
+        <span className="sr-only">notes</span>
+      </SidebarMenuBadge>
+    </SidebarMenuItem>
   );
 }
 

@@ -1,21 +1,19 @@
-import { useState } from "react";
 import { NavLink } from "react-router";
 
-import ScaleList from "@/features/scales/ScaleList";
-import ScaleListError from "@/features/scales/ScaleListError";
-import ScaleListSkeleton from "@/features/scales/ScaleListSkeleton";
-import ScaleListEmpty from "@/features/scales/ScaleListEmpty";
-import { ScaleListRefreshError } from "@/features/scales/ScaleListRefreshError";
+import { useSidebar } from "@/components/ui/sidebar";
 
-import { Button } from "@/components/ui/button";
+import ScaleList from "@/features/scales/ScaleList";
 
 import {
-  ArrowsClockwiseIcon,
-  CaretDownIcon,
-  PlusIcon,
-} from "@phosphor-icons/react";
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+
+import { ArrowsClockwiseIcon, PlusIcon } from "@phosphor-icons/react";
 import type { ScaleSideBarProps } from "./scale.types";
-import { cn } from "@/lib/utils";
 
 export function ScaleSideBar({
   userScales,
@@ -30,73 +28,49 @@ export function ScaleSideBar({
   favoritesError,
   onRetryFavorites,
 }: ScaleSideBarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { setOpenMobile } = useSidebar();
 
   return (
-    <aside className="sticky top-(--nav-height) z-10 flex max-h-[50dvh] w-full flex-col border-b border-sidebar-border bg-sidebar p-4 text-sidebar-foreground lg:h-[calc(100dvh-var(--nav-height))] lg:max-h-none lg:border-r lg:border-b-0">
-      <header className="shrink-0 lg:mb-4">
-        <button
-          type="button"
-          className="flex min-h-11 w-full items-center justify-between px-4 focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none lg:hidden"
-          onClick={() => setIsOpen((open) => !open)}
-          aria-expanded={isOpen}
-          aria-controls="scale-navigation"
-        >
-          <span className="flex items-center gap-2 text-lg font-medium">
-            My Scales <RefreshIndicator isRefreshing={isRefreshing} />
-          </span>
-          <CaretDownIcon
-            className={cn("transition-transform", isOpen && "rotate-180")}
-          />
-        </button>
+    <Sidebar className="top-(--nav-height) z-10 h-[calc(100dvh-var(--nav-height))]">
+      <SidebarHeader className="flex-row items-center justify-between px-5 py-4">
+        <h2 className="text-sm font-semibold">Your Library</h2>
+        <RefreshIndicator isRefreshing={isRefreshing || favoritesRefreshing} />
+      </SidebarHeader>
+      <SidebarContent className="gap-0">
+        <ScaleList
+          label="Saved Scales"
+          contentClassName="data-[state=open]:[&>:last-child]:mb-2"
+          scales={userScales}
+          hasLoaded={hasLoadedScales}
+          isLoading={isLoading}
+          error={error}
+          onRetry={onRetry}
+          emptyTitle="No saved scales yet"
+          emptyDescription="Create a new scale to get started."
+          onNavigate={() => setOpenMobile(false)}
+        />
+        <ScaleList
+          label="Favorite Scales"
+          scales={favorites}
+          hasLoaded={hasLoadedFavorites}
+          isLoading={!hasLoadedFavorites && favoritesRefreshing}
+          error={favoritesError}
+          onRetry={onRetryFavorites}
+          emptyTitle="No favorite scales yet"
+          emptyDescription="Favorite a scale to find it here."
+          onNavigate={() => setOpenMobile(false)}
+        />
+      </SidebarContent>
 
-        <h2 className="hidden items-center gap-2 text-base font-medium tracking-tight lg:flex">
-          My Scales
-          <RefreshIndicator isRefreshing={isRefreshing} />
-        </h2>
-      </header>
-      <nav
-        id="scale-navigation"
-        aria-label="Scale navigation"
-        className={cn(
-          "min-h-0 w-full overflow-y-auto lg:block lg:max-h-none lg:flex-1",
-          isOpen ? "block" : "hidden",
-        )}
-      >
-        {isLoading ? (
-          <ScaleListSkeleton />
-        ) : error && !hasLoadedScales ? (
-          <ScaleListError message={error} onRetry={onRetry} />
-        ) : (
-          <>
-            {error && hasLoadedScales && <ScaleListRefreshError />}
-            {userScales.length === 0 ? (
-              <ScaleListEmpty
-                title="No saved scales yet"
-                description="Create a new scale to get started."
-              />
-            ) : (
-              <ScaleList userScales={userScales} setIsOpen={setIsOpen} />
-            )}
-          </>
-        )}
-      </nav>
-
-      <footer
-        className={cn(
-          "mt-4 shrink-0 justify-center",
-          isOpen ? "flex" : "hidden",
-          "lg:flex",
-        )}
-      >
+      <SidebarFooter className="mt-4 flex shrink-0 items-center justify-center">
         <Button asChild variant="outline" className="flex w-3/4 justify-center">
-          <NavLink to="/scales/new" onClick={() => setIsOpen(false)}>
+          <NavLink to="/scales/new" onClick={() => setOpenMobile(false)}>
             <PlusIcon className="size-4" />
             <span>New Scale</span>
           </NavLink>
         </Button>
-      </footer>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   );
 }
 
