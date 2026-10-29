@@ -68,8 +68,8 @@ export function NoteButton({
           )}
         </div>
       </CardHeader>
-      <CardContent className="absolute inset-0 flex items-center justify-center gap-1 p-0">
-        <span className="text-2xl font-extrabold">{hertz}</span>
+      <CardContent className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2">
+        <span className="text-2xl font-extrabold tabular-nums">{hertz}</span>
         <span className="text-xs text-gray-400">Hz</span>
       </CardContent>
     </Card>
