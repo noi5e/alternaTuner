@@ -9,8 +9,10 @@ import { NoteForm } from "@/features/editor/NoteForm";
 import { NotesList } from "@/features/editor/NotesList";
 import { DirtyStateDialog } from "@/features/editor/DirtyStateDialog";
 
-// import shadcn components
+// import shadcn components + icons
 import { Button } from "@/components/ui/button";
+import { WarningCircleIcon } from "@phosphor-icons/react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // import custom hooks + reducers
 import { useEditorRedirects } from "@/features/editor/useEditorRedirects";
@@ -144,18 +146,35 @@ export function Editor({
         onVisibilityChange={onVisibilityChange}
         isUpdatingVisibility={isUpdatingVisibility}
       />
-      {redirectError && (
-        <div role="alert">
-          <p>{redirectError}</p>
+      {createdScaleId !== null && (
+        <Alert className="mx-auto my-4 flex max-w-sm flex-col">
+          <AlertTitle className="flex items-center gap-2">
+            <WarningCircleIcon
+              className="size-4 shrink-0 text-amber-600"
+              aria-hidden="true"
+            />
+            Scale saved
+          </AlertTitle>
+          <AlertDescription>
+            {redirectError
+              ? "We couldn’t open your scale’s page. Try again to continue editing."
+              : "Opening your scale’s page…"}
+          </AlertDescription>
           <Button
             onClick={() => void openSavedScale()}
             disabled={isOpeningSavedScale}
+            className="mt-3 cursor-pointer"
           >
-            Open saved scale
+            {isOpeningSavedScale ? "Opening…" : "Open saved scale"}
           </Button>
-        </div>
+        </Alert>
       )}
-      {canManageScale && (
+      {/* 
+      conditionally render NoteForm only if scale is editable, and no redirect errors exist.
+      createdScaleId is null at all times, unless a user creates and saves a new scale, so this is a decent check vs. redirectError.
+      redirectError is cleared upon openSavedScale, so this form would erroneously render if user tries to navigate from the redirectError alert.
+      */}
+      {canManageScale && createdScaleId === null && (
         <NoteForm
           isEditingAllowed={isEditingAllowed}
           onCreateNote={handleCreateNote}
