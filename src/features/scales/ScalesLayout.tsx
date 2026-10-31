@@ -12,17 +12,17 @@ import { useScalesList } from "@/features/scales/useScalesList";
 import { listUserScales, listUserFavorites } from "@/features/scales/api";
 
 import type {
-  DatabaseScaleRowWithNotes,
+  DatabaseScaleRowWithNoteCount,
   SideBarScale,
 } from "@/features/scales/scale.types";
 
 function getSideBarScales(
-  databaseRows: DatabaseScaleRowWithNotes[],
+  databaseRows: DatabaseScaleRowWithNoteCount[],
 ): SideBarScale[] {
   return databaseRows.map((row) => ({
     id: row.id,
     title: row.title,
-    noteCount: row.scale_notes.length,
+    noteCount: row.noteCount,
   }));
 }
 

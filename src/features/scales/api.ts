@@ -3,6 +3,7 @@ import type { ScaleDraft } from "@/features/editor/editor.types";
 import type {
   DatabaseScaleRowWithNotes,
   DatabaseScaleRowWithNotesAndDetails,
+  DatabaseScaleRowWithNoteCount,
 } from "@/features/scales/scale.types";
 
 function stripScaleDraftNotes(notes: ScaleDraft["notes"]): number[] {
@@ -11,26 +12,31 @@ function stripScaleDraftNotes(notes: ScaleDraft["notes"]): number[] {
 
 export async function listUserScales(
   ownerId: string,
-): Promise<DatabaseScaleRowWithNotes[]> {
+): Promise<DatabaseScaleRowWithNoteCount[]> {
   const { data, error } = await supabase
     .from("scales")
-    .select("id, title, created_at, updated_at, owner_id, scale_notes(*)")
+    .select(
+      "id, title, created_at, updated_at, owner_id, note_count:scale_notes(count)",
+    )
     .eq("owner_id", ownerId)
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
-  return data;
+  return data.map(({ note_count, ...scale }) => ({
+    ...scale,
+    noteCount: note_count[0]?.count ?? 0,
+  }));
 }
 
 export async function listUserFavorites(
   userId: string,
-): Promise<DatabaseScaleRowWithNotes[]> {
+): Promise<DatabaseScaleRowWithNoteCount[]> {
   const { data, error } = await supabase
     .from("scales")
     .select(
       `
       id, title, created_at, updated_at, owner_id,
-      scale_notes(*),
+      note_count:scale_notes(count),
       scale_favorites!inner(user_id)
     `,
     )
@@ -39,9 +45,9 @@ export async function listUserFavorites(
 
   if (error) throw error;
 
-  return data.map(({ scale_favorites, ...scale }) => {
+  return data.map(({ scale_favorites, note_count, ...scale }) => {
     void scale_favorites;
-    return scale;
+    return { ...scale, noteCount: note_count[0]?.count ?? 0 };
   });
 }
 

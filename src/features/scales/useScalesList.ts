@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
 import type {
-  DatabaseScaleRowWithNotes,
+  DatabaseScaleRowWithNoteCount,
   UseScalesListProps,
 } from "@/features/scales/scale.types";
 
@@ -10,7 +10,7 @@ export function useScalesList({
   apiMethod,
   authLoading,
 }: UseScalesListProps) {
-  const [scales, setScales] = useState<DatabaseScaleRowWithNotes[]>([]);
+  const [scales, setScales] = useState<DatabaseScaleRowWithNoteCount[]>([]);
   const requestId = useRef(0); // keep track of the latest request ID to prevent race conditions when multiple requests are made.
 
   const [hasLoadedScales, setHasLoadedScales] = useState(false); // track whether the scales have been successfully loaded at least once, to handle loading errors + empty scalesLists.

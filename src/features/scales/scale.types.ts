@@ -116,7 +116,7 @@ export type ScalesOutletContext = {
 export type UseScalesListProps = {
   userId: string | null;
   authLoading: boolean;
-  apiMethod: (userId: string) => Promise<DatabaseScaleRowWithNotes[]>;
+  apiMethod: (userId: string) => Promise<DatabaseScaleRowWithNoteCount[]>;
 };
 
 // single row from scale_notes table, with foreign key scale_id to scales table
@@ -131,6 +131,14 @@ export type DatabaseScaleRowWithNotes = Pick<
   "id" | "title" | "created_at" | "updated_at" | "owner_id"
 > & {
   scale_notes: DatabaseScaleNoteRow[];
+};
+
+// for sidebar context, where only noteCount is needed, and not the whole scale_notes row.
+export type DatabaseScaleRowWithNoteCount = Pick<
+  DatabaseScaleRow,
+  "id" | "title" | "created_at" | "updated_at" | "owner_id"
+> & {
+  noteCount: number;
 };
 
 // includes favorite status, public visibility, and other metadata
