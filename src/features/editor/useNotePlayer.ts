@@ -121,9 +121,12 @@ export function useNotePlayer({ notes }: UseNotePlayerProps) {
     };
   }, [handleKeyUp]);
 
-  // after the component unmounts, stop all notes to prevent any lingering audio
+  // stop playback when window focus is lost or the component unmounts.
   useEffect(() => {
+    window.addEventListener("blur", stopAllNotes);
+
     return () => {
+      window.removeEventListener("blur", stopAllNotes);
       stopAllNotes();
     };
   }, [stopAllNotes]);
