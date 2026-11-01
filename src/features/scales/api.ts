@@ -53,16 +53,17 @@ export async function listUserFavorites(
 
 export async function getScaleById(
   scaleId: string,
-): Promise<DatabaseScaleRowWithNotesAndDetails> {
+): Promise<DatabaseScaleRowWithNotesAndDetails | null> {
   const { data, error } = await supabase
     .from("scales")
     .select(
       "id, title, created_at, updated_at, owner_id, scale_notes(*), is_public, scale_favorites(user_id)",
     )
     .eq("id", scaleId)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
+  if (data === null) return null;
 
   const { scale_favorites, is_public, ...scale } = data;
 
@@ -85,7 +86,10 @@ export async function createScale({
   });
 
   if (error) throw error;
-  return getScaleById(data.id); // the RPC function returns data without the associated notes, so we fetch the full scale by ID.
+  // The RPC returns data without notes, so fetch the full scale by ID.
+  const scale = await getScaleById(data.id);
+  if (scale === null) throw new Error("Could not load the created scale");
+  return scale;
 }
 
 export async function updateScale(
@@ -100,7 +104,9 @@ export async function updateScale(
 
   if (error) throw error;
 
-  return getScaleById(id);
+  const scale = await getScaleById(id);
+  if (scale === null) throw new Error("Could not load the updated scale");
+  return scale;
 }
 
 export async function deleteScale(id: string) {

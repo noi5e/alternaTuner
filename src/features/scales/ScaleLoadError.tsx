@@ -1,5 +1,10 @@
 import { WarningCircleIcon } from "@phosphor-icons/react";
-import { useRevalidator } from "react-router";
+import {
+  useRevalidator,
+  useRouteError,
+  isRouteErrorResponse,
+  Link,
+} from "react-router";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +20,41 @@ export function ScaleLoadError() {
   const revalidator = useRevalidator();
   const isRetrying = revalidator.state === "loading";
 
+  const routeError = useRouteError();
+
+  const isBadRequest =
+    isRouteErrorResponse(routeError) && routeError.status === 400;
+  const isNotFound =
+    isRouteErrorResponse(routeError) && routeError.status === 404;
+  const shouldNavigateAway = isBadRequest || isNotFound;
+
+  let title = "Couldn’t load this scale";
+  let description = "Please try again.";
+
+  if (isBadRequest) {
+    switch (routeError.data?.code) {
+      case "MISSING_SCALE_IDENTIFIER":
+        title = "No scale specified";
+        description = "Choose a scale to open.";
+        break;
+      case "INVALID_SCALE_IDENTIFIER":
+        title = "Invalid scale link";
+        description = "Check that you copied the full link.";
+        break;
+      default:
+        title = "Invalid scale request";
+        description = "Check the link or choose another scale.";
+    }
+  }
+
+  if (isNotFound) {
+    title = "Scale not found or unavailable";
+    description =
+      "This scale may have been deleted, or you may not have access.";
+  }
+
   return (
-    <main className="min-w-0 p-4 sm:p-6 lg:p-8">
+    <div className="min-w-0 p-4 sm:p-6 lg:p-8">
       <Empty className="my-8" aria-busy={isRetrying}>
         <EmptyHeader role="alert">
           <EmptyMedia
@@ -25,18 +63,25 @@ export function ScaleLoadError() {
           >
             <WarningCircleIcon aria-hidden="true" />
           </EmptyMedia>
-          <EmptyTitle>Couldn’t load this scale</EmptyTitle>
-          <EmptyDescription>Please try again.</EmptyDescription>
+          <EmptyTitle>{title}</EmptyTitle>
+          <EmptyDescription>{description}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button
-            disabled={isRetrying}
-            onClick={() => void revalidator.revalidate()}
-          >
-            {isRetrying ? "Trying again…" : "Try again"}
-          </Button>
+          {shouldNavigateAway ? ( // user error, slug is missing or invalid.
+            <Button asChild>
+              <Link to="/scales/new">Create a scale</Link>
+            </Button>
+          ) : (
+            // else, server error, requested scale probably exists, but is unavailable. give user option to retry.
+            <Button
+              disabled={isRetrying}
+              onClick={() => void revalidator.revalidate()}
+            >
+              {isRetrying ? "Trying again…" : "Try again"}
+            </Button>
+          )}
         </EmptyContent>
       </Empty>
-    </main>
+    </div>
   );
 }
