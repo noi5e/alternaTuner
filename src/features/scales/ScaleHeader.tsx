@@ -126,6 +126,7 @@ export function ScaleHeader({
               isOpeningSavedScale={isOpeningSavedScale}
               isEditingAllowed={isEditingAllowed}
               onSave={onSave}
+              notesCount={notesCount}
             />
           )}
         </div>

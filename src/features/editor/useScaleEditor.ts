@@ -85,6 +85,16 @@ export function useScaleEditor({
   async function saveScale() {
     if (isSaving || createdScaleId !== null || !onSave) return;
 
+    if (notes.length === 0) {
+      dispatchSaveStatus({
+        type: "saveError",
+        payload: {
+          message: "Add at least one note before saving.",
+        },
+      });
+      return;
+    }
+
     dispatchSaveStatus({ type: "saving" });
 
     try {

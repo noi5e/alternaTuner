@@ -99,6 +99,7 @@ export type SaveScaleButtonProps = {
   onSave: () => void;
   isEditingAllowed: boolean;
   isOpeningSavedScale: boolean;
+  notesCount: number;
 };
 
 export type DeleteScaleDialogProps = {
