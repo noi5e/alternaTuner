@@ -25,12 +25,29 @@ function parseHertz(value: FormDataEntryValue | null): ParseHertzResult {
     };
   }
 
+  if (/e/i.test(value)) {
+    // reject scientific notation, eg. 1e+30, as the input field technically accepts it.
+    return {
+      success: false,
+      message: "Enter the frequency in decimal form, such as 440.5.",
+    };
+  }
+
   const hertz = Number(value);
 
   if (!Number.isFinite(hertz) || hertz <= MIN_HERTZ) {
     return {
       success: false,
       message: `Frequency must be a finite number greater than ${MIN_HERTZ}.`,
+    };
+  }
+
+  const fractionLength = value.split(".")[1]?.length ?? 0;
+
+  if (fractionLength > 2) {
+    return {
+      success: false,
+      message: "Enter a frequency with at most two decimal places.",
     };
   }
 
@@ -94,6 +111,7 @@ export function NoteForm({ onCreateNote, isEditingAllowed }: NoteFormProps) {
                 className="flex-1 rounded-none text-lg tabular-nums md:font-semibold"
                 name="hertz"
                 disabled={!isEditingAllowed}
+                inputMode="decimal"
                 min={MIN_HERTZ}
                 step="any"
                 type="number"
@@ -101,6 +119,13 @@ export function NoteForm({ onCreateNote, isEditingAllowed }: NoteFormProps) {
                 required
                 {...(error ? { "aria-invalid": "true" } : {})}
                 aria-describedby={error ? "hertz-error" : undefined}
+                onBlur={(event) => {
+                  const value = event.currentTarget.value;
+                  if (value === "") return;
+
+                  const parsed = parseHertz(value);
+                  if (!parsed.success) setError(parsed.message);
+                }}
                 onChange={() => {
                   if (error) setError(null);
                 }}

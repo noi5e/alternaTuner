@@ -5,6 +5,10 @@ import { TrashIcon } from "@phosphor-icons/react";
 
 import type { NoteButtonProps } from "@/features/editor/editor.types";
 
+function formatHertz(hertz: number): string {
+  return hertz.toFixed(2).replace(/(\.\d*?[1-9])0+$|\.00$/, "$1"); // Round to two decimal places and trim fractional trailing zeros, so that 440.50 becomes 440.5 and 440.00 becomes 440.
+}
+
 function releasePointerCapture(event: React.PointerEvent<HTMLElement>) {
   if (event.currentTarget.hasPointerCapture(event.pointerId)) {
     event.currentTarget.releasePointerCapture(event.pointerId);
@@ -69,7 +73,9 @@ export function NoteButton({
         </div>
       </CardHeader>
       <CardContent className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2">
-        <span className="text-2xl font-extrabold tabular-nums">{hertz}</span>
+        <span className="text-2xl font-extrabold tabular-nums">
+          {formatHertz(hertz)}
+        </span>
         <span className="text-xs text-gray-400">Hz</span>
       </CardContent>
     </Card>
